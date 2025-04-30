@@ -1,33 +1,28 @@
 package islm;
 
-import repast.simphony.engine.environment.RunEnvironment;
-import repast.simphony.engine.schedule.ISchedule;
-import repast.simphony.engine.schedule.ScheduleParameters;
 import repast.simphony.context.Context;
-import repast.simphony.context.DefaultContext;
-import repast.simphony.space.continuous.*;
-import repast.simphony.space.grid.*;
-import repast.simphony.random.RandomHelper;
 
-public class ISLMBuilder extends DefaultContext<Object> {
+import repast.simphony.dataLoader.ContextBuilder;
 
-    public ISLMBuilder() {
-        super("ISLMContext");
-        build();
-    }
+public class ISLMBuilder implements ContextBuilder<Object> {
 
-    private void build() {
+    @Override
+    public Context<Object> build(Context<Object> context) {
+        context.setId("ISLMContext");
+
         Zentralbank zentralbank = new Zentralbank();
-        add(zentralbank);
+        context.add(zentralbank);
 
         for (int i = 0; i < 50; i++) {
             Haushalt h = new Haushalt(zentralbank);
-            add(h);
+            context.add(h);
         }
 
         for (int i = 0; i < 10; i++) {
             Unternehmen u = new Unternehmen(zentralbank);
-            add(u);
+            context.add(u);
         }
+
+        return context;
     }
 }
