@@ -1,4 +1,6 @@
-package islm;
+package islm.agenten.Kredite;
+
+import islm.agenten.Unternehmen;
 
 public class KreditAnfrage {
     public Unternehmen unternehmen;
