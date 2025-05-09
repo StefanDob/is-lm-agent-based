@@ -26,7 +26,7 @@ public class CSVExporter {
     }
 
     
-    @ScheduledMethod(start = 1, interval = 1, priority = 1.0)
+    @ScheduledMethod(start = 1, interval = 1, priority = 2.0)
     public void exportData() {
         try {
             File file = new File(filePath);

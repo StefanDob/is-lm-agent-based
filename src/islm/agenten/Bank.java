@@ -3,6 +3,7 @@ package islm.agenten;
 import java.util.ArrayList;
 import java.util.*;
 
+import islm.GeldMarkt;
 import islm.SessionManager;
 import islm.agenten.Kredite.KreditAnfrage;
 import islm.agenten.Kredite.Kreditvertrag;
@@ -38,7 +39,7 @@ public class Bank {
     public void empfangeSparbetrag(double betrag, Haushalt haushalt) {
         gesamtSparbetrag += betrag;
         offenerSparBetrag += betrag;
-        
+        //TODO
         sparenProHaushalt.put(haushalt, betrag);
     }
     
@@ -53,7 +54,6 @@ public class Bank {
     	
     	verteileOffeneKredite();
     	
-    	passeZinsAn();
     	
     	/*
     	try {
@@ -64,11 +64,22 @@ public class Bank {
         */
     }
     
+    /**
+     * der zins wird nach und nach angepasst und nicht auf einmal
+     */
+    @ScheduledMethod(start = 1, interval = 1, priority = 1.0)
     public void passeZinsAn() {
-    	for(Kreditvertrag kreditVertrag: aktiveKredite) {
-			
-			
-		}
+    	double geldangebot = Zentralbank.getGeldMenge();
+    	double geldnachfrage = GeldMarkt.berechneGeldnachfrage();
+    	double delta = geldnachfrage - geldangebot;
+    	
+    	double anpassungsrate = 0.01;
+
+    	if (delta > 0) {
+    		marktZins += anpassungsrate; 
+    	} else if (delta < 0) {
+    		marktZins -= anpassungsrate;
+    	}
     }
 
     public void stelleKreditanfrage(KreditAnfrage anfrage) {

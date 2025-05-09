@@ -20,5 +20,11 @@ public class DataCollecter {
 		}
 		return investition;
 	}
+	
+
+	
+	public static double getVolkseinkommen() {
+		return getKonsum() + getInvestition() + SessionManager.getStaat().getStaatsausgaben();
+	}
 
 }
