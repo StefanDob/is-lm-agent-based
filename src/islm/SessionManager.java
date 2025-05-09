@@ -15,7 +15,7 @@ public class SessionManager {
 	
 	public static Staat staat = new Staat(0.2);
 	
-	public static Bank bank = new Bank();
+	public static Bank bank = new Bank(0.02);
 	
 	
 	

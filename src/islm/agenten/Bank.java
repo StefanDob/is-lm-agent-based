@@ -15,14 +15,31 @@ public class Bank {
     private List<Kreditvertrag> aktiveKredite = new ArrayList<>();
     private double gesamtSparbetrag = 0; // gesamtes Geld das momentan bespart wird
     private double offenerSparBetrag = 0; //geld das noch nicht in kreditverträgen gebunden ist
+    Map<Haushalt,Double> sparenProHaushalt = new HashMap<>();
+    
+    /**
+     * es gibt keine garantie das dieser Marktzins gleich bleibt, in jedem schritt kann sich dieser marktzins ändern
+     */
+    private double marktZins = 0.0;
+    
+    
+    public Bank(double marktZins) {
+    	this.marktZins = marktZins;
+    }
     
     
     //=====================================Kredite/Sparen===============================================================================================
     
-
-    public void empfangeSparbetrag(double betrag) {
+    /**
+     * wird von den Haushalten aufgerufen um ihre Geld auf ihr Konto in der Bank zu laden
+     * @param betrag Betrag der zu besparen ist
+     * @param haushalt von dem der Betrag kommt
+     */
+    public void empfangeSparbetrag(double betrag, Haushalt haushalt) {
         gesamtSparbetrag += betrag;
         offenerSparBetrag += betrag;
+        
+        sparenProHaushalt.put(haushalt, betrag);
     }
     
     @ScheduledMethod(start = 1, interval = 1)
@@ -30,22 +47,28 @@ public class Bank {
     	//checke ob kredite geschlossen werden können
     	for (Kreditvertrag kreditVertrag : new ArrayList<>(aktiveKredite)) {
     	    if (kreditVertrag.istAbbezahlt()) {
-    	        aktiveKredite.remove(kreditVertrag); // jetzt sicher
+    	        aktiveKredite.remove(kreditVertrag); 
     	    }
     	}
     	
     	verteileOffeneKredite();
     	
-    	System.out.println("aktive Kredite: " + aktiveKredite.size());
-    	System.out.println("kreditAnfragen Kredite: " + kreditAnfragen.size());
-    	System.out.println("Unternehmen: " + SessionManager.getUnternehmenListe().size());
-    	///*
+    	passeZinsAn();
+    	
+    	/*
     	try {
-            Thread.sleep(200); // sleeps for 1000 milliseconds = 1 second
+            Thread.sleep(5); // sleeps for 1000 milliseconds = 1 second
         } catch (InterruptedException e) {
             e.printStackTrace(); // or handle it more gracefully
         }
-        //*/
+        */
+    }
+    
+    public void passeZinsAn() {
+    	for(Kreditvertrag kreditVertrag: aktiveKredite) {
+			
+			
+		}
     }
 
     public void stelleKreditanfrage(KreditAnfrage anfrage) {
@@ -158,6 +181,20 @@ public class Bank {
     public double getGesamtSparbetrag() {
     	return gesamtSparbetrag;
     }
+    
+    public double getMarktZins() {
+    	return marktZins;
+    }
+    
+    public List<Kreditvertrag> getAktiveKredite(){
+    	return aktiveKredite;
+    }
+    
+    public List<KreditAnfrage> getKreditAnfragen(){
+    	return kreditAnfragen;
+    }
+    
+    
 
 	
 

@@ -41,7 +41,7 @@ public class Unternehmen {
 
         // Zinsen und Tilgung zahlen
         double alleVerbindlichkeiten = SessionManager.getBank().getAlleVerbindlichkeiten(this);
-        double tilgungsRate = alleVerbindlichkeiten * RandomHelper.nextDoubleFromTo(0.1, 0.2); //etwa 10 bis 40 des Kredites werden getilgt
+        double tilgungsRate = alleVerbindlichkeiten * RandomHelper.nextDoubleFromTo(0.1, 0.2); //etwa 10 bis 20 des Kredites werden getilgt
 
         SessionManager.getBank().tilgeVerbindlichkeiten(this, tilgungsRate);
         liquiditat -= tilgungsRate;
@@ -69,6 +69,7 @@ public class Unternehmen {
     }
 
 	public void zahleZinsen(double zinsen) {
+		System.out.println("Gets here");
 		liquiditat -= zinsen;
 	}
 	

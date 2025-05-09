@@ -58,6 +58,10 @@ public class Staat {
 		this.steuerRate = steuerRate;
 	}
 	
+	public double getStaatsausgaben() {
+		return ausstehendeZahlungenGehalt + ausstehendeZahlungenMaterialien;
+	}
+	
 	
 
 }

@@ -9,6 +9,8 @@ public class Haushalt {
 	private double kassenBestand;
 	
 	private double konsum;
+	
+	double investition;
 
     
     public Haushalt() {
@@ -18,17 +20,25 @@ public class Haushalt {
     @ScheduledMethod(start = 1, interval = 1)
     public void step() {
         
-        konsum = RandomHelper.nextDoubleFromTo(0.2, 1.0) * kassenBestand;
-        
-        // Konsum: über die bank wird der Konsum an zufällige unternehmen verteilt
-        SessionManager.getBank().empfangeKonsumZahlung(konsum);
-        
-        double ersparnis = kassenBestand - konsum;
+    	double zins = SessionManager.getBank().getMarktZins(); // aktueller Marktzins
 
-        // Investition wird als Ersparnis über die Bank Firmen bereitgestellt
-        SessionManager.getBank().empfangeSparbetrag(ersparnis);
+        // Zinsreaktionsfunktion: höhere Zinsen → mehr sparen (weniger konsumieren)
+        // z. B. Konsumquote nimmt linear ab mit steigendem Zins (zwischen 0.2 und 1.0)
+        double konsumQuote = 1.0 - Math.min(0.8, zins * 10); // skaliert bei Zins = 0.08 auf 0.2
+
+        konsum = konsumQuote * kassenBestand;
+
+        // Konsumzahlung über die Bank an Firmen
+        SessionManager.getBank().empfangeKonsumZahlung(konsum);
+
+        investition = kassenBestand - konsum;
         
+       
+
+        // Sparbetrag wird über die Bank investiert
+        SessionManager.getBank().empfangeSparbetrag(investition, this);
         
+        kassenBestand = 0;
     }
     
     
@@ -39,8 +49,17 @@ public class Haushalt {
     	this.kassenBestand += (lohn - steuern);
     }
     
+    public void erhalteZinsen(double zinsen) {
+    	//TODO vllt auch steuern modellieren?
+    	this.kassenBestand += zinsen;
+    }
+    
     
     public double getKonsum() {
     	return konsum;
+    }
+    
+    public double getInvestition() {
+    	return investition;
     }
 }

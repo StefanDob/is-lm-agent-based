@@ -5,8 +5,10 @@ import islm.agenten.Haushalt;
 import islm.agenten.Staat;
 import islm.agenten.Unternehmen;
 import islm.agenten.Zentralbank;
+import islm.export.CSVExporter;
 import repast.simphony.context.Context;
 import repast.simphony.dataLoader.ContextBuilder;
+import repast.simphony.engine.environment.RunEnvironment;
 
 public class ISLMBuilder implements ContextBuilder<Object> {
 
@@ -21,7 +23,7 @@ public class ISLMBuilder implements ContextBuilder<Object> {
         Zentralbank.setZinsSatz(0.02);
         Zentralbank.setGeldMenge(1000000);
         
-        Bank bank = new Bank();
+        Bank bank = new Bank(Zentralbank.getZinsSatz());
         SessionManager.setBank(bank);
         context.add(bank);
         
@@ -47,10 +49,12 @@ public class ISLMBuilder implements ContextBuilder<Object> {
             
         }
         
-        System.out.println("Gets here and context is: " + (context == null));
         
-       
+       //Setup exporter
+        CSVExporter exporter = new CSVExporter();
+        context.add(exporter);
         
+        RunEnvironment.getInstance().endAt(1000);
         
         return context;
     }
