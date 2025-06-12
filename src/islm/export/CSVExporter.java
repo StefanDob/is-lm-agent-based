@@ -5,11 +5,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import islm.SessionManager;
-import islm.agenten.Zentralbank;
 import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.engine.schedule.ScheduledMethod;
 
 public class CSVExporter {
+	/*
     private final String filePath = "output/islm_output.csv";
     private boolean headerWritten = false;
     
@@ -61,4 +61,5 @@ public class CSVExporter {
             e.printStackTrace();
         }
     }
+    */
 }

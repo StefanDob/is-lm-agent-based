@@ -1,81 +1,150 @@
 package islm.agenten;
 
+import repast.simphony.engine.schedule.ScheduleParameters;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.random.RandomHelper;
+
+import java.util.*;
+
 import islm.SessionManager;
-import islm.agenten.Kredite.KreditAnfrage;
-import islm.agenten.Kredite.Kreditvertrag;
 
 public class Unternehmen {
-	
-	private double liquiditat;
-	
-	private double ausstehendeZahlungenGehalt = 0;
-	
-	private double ausstehendeZahlungenMaterialien = 0;
+	private double liquiditaet;
+	private double preis = 0;
+    private double gehalt = 0;; 
+    private int inventar = 0;
+    
+    private double nachfrageLetzterMonat = 0; //TODO make sure this gets set
+    private double marginaleKosten = 0;
+    
+    private int durchgehendeEinstellungsmonate = 0; //anzahl an monaten in denen durchgehend leute eingestellt wurden
+    
+    private static final int GAMMA = 3; //anzahl an aufeinanderfolgenden monaten in denen konsequent leute eingestellt wurden
+    private static final double DELTA = 0.019; //boundries of distribution to increase wage
+    private static final double UPPER_PHI_INVENTORIES = 1.0;
+    private static final double LOWER_PHI_INVENTORIES = 0.25;
+    
+    private static final double UPPER_PHI_PRICE = 1.15;
+    private static final double LOWER_PHI_PRICE = 0.025;
+    
+    private static final double THETA = 0.75; //propability of changing price if inventory is not in bounds
+    private static final double theta = 0.02;
+    
+    private List<Unternehmen> typeAPartners = new ArrayList<>(); //buy consumption goods 
+    private List<Haushalt> typeBPartners = new ArrayList<>(); // employment
+    
+    private boolean workerNeedsToBeFired = false;
 
     
-
-    @ScheduledMethod(start = 1, interval = 1)
-    public void step() {
+    
+    
+    
+    @ScheduledMethod(start = 1, interval = 21, priority = ScheduleParameters.FIRST_PRIORITY)
+    public void beginningOfMonth() {
+    	//fire people if you have to do so because of last periods
+    	if(workerNeedsToBeFired) {
+    		fireRandomWorker();
+    	}
     	
-    	
-    	//ausstehende Zahlungen Gehalt
-    	SessionManager.getBank().zahleLohnAus(ausstehendeZahlungenGehalt);
-    	ausstehendeZahlungenGehalt = 0;
-    	
-    	//ausstehende Zahlungen Materialien
-    	SessionManager.getBank().bezahleMaterialien(ausstehendeZahlungenMaterialien);
-    	ausstehendeZahlungenMaterialien = 0;
-    	
-        
-
-        // Investitionswunsch äußern
-    	double investitionsBedarfVorhanden = RandomHelper.nextDouble() < 0.25 ? 0 : 1; // 0 in 25% der fälle sonst 1
-        double investitionsbedarf = RandomHelper.nextDoubleFromTo(0, 0.5 * liquiditat) * investitionsBedarfVorhanden;
-        //only ask for kredit if you do not have more than 3 kredits in order to not got too deep into debt
-        if(SessionManager.getBank().getAnzahlKredite(this) <= 1) {
-        	SessionManager.getBank().stelleKreditanfrage(new KreditAnfrage(this, investitionsbedarf));
+    	//adjust wages based on months without hiring
+    	if (durchgehendeEinstellungsmonate == 0) {
+    		//im letzen monat wurde niemand eingestellt
+            adjustWage(true); // increase wage
+        } else if (durchgehendeEinstellungsmonate >= GAMMA ) {
+            adjustWage(false); // decrease wage
         }
-        
-
-        // Zinsen und Tilgung zahlen
-        double alleVerbindlichkeiten = SessionManager.getBank().getAlleVerbindlichkeiten(this);
-        double tilgungsRate = alleVerbindlichkeiten * RandomHelper.nextDoubleFromTo(0.1, 0.2); //etwa 10 bis 20 des Kredites werden getilgt
-
-        SessionManager.getBank().tilgeVerbindlichkeiten(this, tilgungsRate);
-        liquiditat -= tilgungsRate;
-        if (liquiditat < -1000) {
-            System.out.println("Unternehmen insolvent.");
-            SessionManager.getUnternehmenListe().remove(this);
-        }
-    }
-
-    public void erhalteZahlung(double betrag) {
-    	//TODO die Raten für lohnKosten, Materialkosten und Gewinn können dynamisch generiert werden
-    	//ziehe zuerst die Kosten für das erstellen des Produktes ab - hier nur lohn und materialkosten
-    	double lohnKosten = 0.2 * betrag;
-    	ausstehendeZahlungenGehalt += lohnKosten;
     	
-    	double materialKosten = 0.3 * betrag;
-    	ausstehendeZahlungenMaterialien += materialKosten;
+    	//adjust number of employees and price
     	
-    	//10% sind gewinn und erhöhen das Kapital
-        liquiditat += betrag * 0.5;
+    	double upperBarrierInventory = UPPER_PHI_INVENTORIES * nachfrageLetzterMonat;
+    	double lowerBarrierInventory = LOWER_PHI_INVENTORIES * nachfrageLetzterMonat;
+    	
+    	double upperBarrierPrice = UPPER_PHI_PRICE * marginaleKosten;
+    	double lowerBarrierPrice = LOWER_PHI_PRICE * marginaleKosten;
+    	
+    	
+    	if(inventar > upperBarrierInventory) {
+    		//fire randomly chosen worker in next month
+    		workerNeedsToBeFired = true;
+    		if(preis > upperBarrierPrice) {
+    			//decrease price with probability Thita
+    			if (RandomHelper.nextDouble() < THETA) {
+    				adjustPrice(false); //decrease prce
+    			}
+    		}
+    	}else if(inventar < lowerBarrierInventory) {
+    		//create new position to raise production
+    		addTypeBPartner(new Haushalt());
+    		if(preis > upperBarrierPrice) {
+    			//increase price with probability Thita
+    			if (RandomHelper.nextDouble() < THETA) {
+    				adjustPrice(true); //increase price
+    			}
+    		}
+    		
+    	}
+    	
+    	
     }
+    
+    
+    private Haushalt fireRandomWorker() {
+    	if (typeBPartners == null || typeBPartners.isEmpty()) return null;
 
-    public void empfangeKreditvertrag(Kreditvertrag vertrag) {
-        liquiditat += vertrag.ursprungsbetrag;
-    }
-
-	public void zahleZinsen(double zinsen) {
-		System.out.println("Gets here");
-		liquiditat -= zinsen;
+        int index = RandomHelper.nextInt(typeBPartners.size());
+        return typeBPartners.remove(index);
+		
 	}
+
+
+	/*
+     * decrease wage if increase is false else increase it
+     */
+    public void adjustWage(boolean increase) {
+        double mu = RandomHelper.nextDouble() * DELTA;  // μᵢ ∈ [0, δ)
+
+        if (increase) {
+            gehalt *= (1.0 + mu);
+        } else {
+        	gehalt *= (1.0 - mu);
+        }
+    }
+
+    /*
+     * decrease price if increase is false, else increase it
+     */
+    public void adjustPrice(boolean increase) {
+        double vu = RandomHelper.nextDouble() * theta;  // vᵢ ∈ [0, ϑ)
+
+        if (increase) {
+            preis *= (1.0 + vu);
+        } else {
+            preis *= (1.0 - vu);
+        }
+    }
+    
+    //===============================Getter/Setter===========================================
+    
+    
+    public void addTypeAPartner(Unternehmen f) {
+        typeAPartners.add(f);
+    }
+
+    public void addTypeBPartner(Haushalt f) {
+        typeBPartners.add(f);
+    }
+
+    public List<Unternehmen> getTypeAPartners() {
+        return typeAPartners;
+    }
+
+    public List<Haushalt> getTypeBPartners() {
+        return typeBPartners;
+    }
+    
+    
+    
 	
-	public boolean istInsolvent() {
-		return liquiditat < -1000;
-	}
 }
 
 

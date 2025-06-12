@@ -4,7 +4,7 @@ import islm.SessionManager;
 import islm.agenten.Haushalt;
 
 public class DataCollecter {
-	
+	/*
 	public static double getKonsum() {
 		double konsum = 0.0;
 		for(Haushalt h : SessionManager.getHausHaltListe()) {
@@ -26,5 +26,5 @@ public class DataCollecter {
 	public static double getVolkseinkommen() {
 		return getKonsum() + getInvestition() + SessionManager.getStaat().getStaatsausgaben();
 	}
-
+	*/
 }
