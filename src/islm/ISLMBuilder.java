@@ -1,14 +1,16 @@
 package islm;
 
-import islm.agenten.Bank;
+import java.util.*;
+
+
 import islm.agenten.Haushalt;
-import islm.agenten.Staat;
 import islm.agenten.Unternehmen;
-import islm.agenten.Zentralbank;
 import islm.export.CSVExporter;
 import repast.simphony.context.Context;
 import repast.simphony.dataLoader.ContextBuilder;
 import repast.simphony.engine.environment.RunEnvironment;
+import repast.simphony.engine.schedule.ScheduleParameters;
+import repast.simphony.engine.schedule.ScheduledMethod;
 
 public class ISLMBuilder implements ContextBuilder<Object> {
 
@@ -16,21 +18,6 @@ public class ISLMBuilder implements ContextBuilder<Object> {
     public Context<Object> build(Context<Object> context) {
         context.setId("islm");
        
-        
-        
-        
-        //Setup Zentralbank
-        Zentralbank.setZinsSatz(0.02);
-        Zentralbank.setGeldMenge(1000000);
-        
-        Bank bank = new Bank(Zentralbank.getZinsSatz());
-        SessionManager.setBank(bank);
-        context.add(bank);
-        
-        //Staat aufsetzen
-        Staat staat = new Staat(0.2);
-        SessionManager.setStaat(staat);
-        context.add(staat);
         for (int i = 0; i < 70; i++) {
             Haushalt h = new Haushalt();
             context.add(h);
@@ -44,9 +31,6 @@ public class ISLMBuilder implements ContextBuilder<Object> {
             Unternehmen u = new Unternehmen();
             context.add(u);
             SessionManager.registriereUnternehmen(u);
-            //das erste Geld wird so in das system eingeführt
-            u.erhalteZahlung(startKapitalProUnternehmen);
-            
         }
         
         
@@ -55,6 +39,8 @@ public class ISLMBuilder implements ContextBuilder<Object> {
         context.add(exporter);
         
         RunEnvironment.getInstance().endAt(1000);
+        
+        
         
         return context;
         
@@ -101,5 +87,19 @@ public class ISLMBuilder implements ContextBuilder<Object> {
     }
          
          */
+        
+        
+    }
+    
+    
+    //this method is called here instead of in the household classes in order to make sure that the houselholds are picked in 
+    //random order to seek new trading connections
+    @ScheduledMethod(start = 1, interval = 21, priority = ScheduleParameters.FIRST_PRIORITY)
+    public void beginningOfMonth() {
+    	List<Haushalt> shuffledHouseholds = new ArrayList<>(SessionManager.getHausHaltListe());
+    	Collections.shuffle(shuffledHouseholds);
+    	for(Haushalt h : shuffledHouseholds) {
+    		h.beginningOfMonth();
+    	}
     }
 }

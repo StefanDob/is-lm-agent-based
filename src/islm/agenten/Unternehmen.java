@@ -141,6 +141,11 @@ public class Unternehmen {
     public List<Haushalt> getTypeBPartners() {
         return typeBPartners;
     }
+
+
+	public int getNumberOfWorkers() {
+		return typeBPartners.size();
+	}
     
     
     

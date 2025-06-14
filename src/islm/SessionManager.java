@@ -4,40 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import islm.agenten.Haushalt;
-import islm.agenten.Staat;
 import islm.agenten.Unternehmen;
-import islm.agenten.Bank;
+
 
 
 public class SessionManager {
 	public static List<Unternehmen> unternehmenListe = new ArrayList<>();
 	public static List<Haushalt> hausHaltListe = new ArrayList<>();
 	
-	public static Staat staat = new Staat(0.2);
-	
-	public static Bank bank = new Bank(0.02);
 	
 	
 	
-    public static Unternehmen zufaelligesUnternehmen() {
-        
-        if (unternehmenListe.isEmpty()) return null;
-        return unternehmenListe.get((int)(Math.random() * unternehmenListe.size()));
-    }
     
-    public static Haushalt zufaelligerHaushalt() {
-        
-        if (hausHaltListe.isEmpty()) return null;
-        return hausHaltListe.get((int)(Math.random() * hausHaltListe.size()));
-    }
-    
-    public static void registriereUnternehmen(Unternehmen unternehmen) {
-    	unternehmenListe.add(unternehmen);
-    }
-    
-    public static void registriereHaushalt(Haushalt haushalt) {
-    	hausHaltListe.add(haushalt);
-    }
     
     
     //==================================================================GETTER/SETTER=================================================================================================================
@@ -62,22 +40,7 @@ public class SessionManager {
         hausHaltListe = neueHausHaltListe;
     }
     
-    public static Staat getStaat() {
-        return staat;
-    }
-
-    public static void setStaat(Staat neuerStaat) {
-    	SessionManager.staat = neuerStaat;
-    }
-    
-    public static Bank getBank() {
-        return bank;
-    }
-
-    public static void setBank(Bank neueBank) {
-    	SessionManager.bank = neueBank;
-    }
-    
+  
    
     
 }
