@@ -74,7 +74,7 @@ public class Unternehmen {
     		}
     	}else if(inventar < lowerBarrierInventory) {
     		//create new position to raise production
-    		addTypeBPartner(new Haushalt());
+    		addTypeBPartner(new Haushalt()); //TODO fix this to not add a new household but to create opportunity for households to apply
     		if(preis > upperBarrierPrice) {
     			//increase price with probability Thita
     			if (RandomHelper.nextDouble() < THETA) {
@@ -150,6 +150,22 @@ public class Unternehmen {
 	public double getPreis() {
 		return preis;
 	}
+	
+	public boolean getOpenPosition() {
+		//TODO figure out some logic for hiring people
+		return true;
+	}
+	
+	public double getGehalt() {
+		return gehalt;
+	}
+
+
+	public void empfangeBewerbungAufArbeit(Haushalt haushalt) {
+		// TODO Auto-generated method stub 
+		
+	}
+	
     
     
     

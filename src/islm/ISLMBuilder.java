@@ -94,7 +94,7 @@ public class ISLMBuilder implements ContextBuilder<Object> {
     
     //this method is called here instead of in the household classes in order to make sure that the houselholds are picked in 
     //random order to seek new trading connections
-    @ScheduledMethod(start = 1, interval = 21, priority = ScheduleParameters.FIRST_PRIORITY)
+    @ScheduledMethod(start = 1, interval = 21, priority = ScheduleParameters.LAST_PRIORITY)
     public void beginningOfMonth() {
     	List<Haushalt> shuffledHouseholds = new ArrayList<>(SessionManager.getHausHaltListe());
     	Collections.shuffle(shuffledHouseholds);

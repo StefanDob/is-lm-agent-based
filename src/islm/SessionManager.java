@@ -5,6 +5,7 @@ import java.util.List;
 
 import islm.agenten.Haushalt;
 import islm.agenten.Unternehmen;
+import repast.simphony.random.RandomHelper;
 
 
 
@@ -16,6 +17,10 @@ public class SessionManager {
 	
 	
     
+	public static Unternehmen getRandomUnternehmen() {
+		 int index = RandomHelper.nextIntFromTo(0, unternehmenListe.size() - 1);
+		 return unternehmenListe.get(index);
+	}
     
     
     //==================================================================GETTER/SETTER=================================================================================================================
@@ -49,6 +54,8 @@ public class SessionManager {
 		unternehmenListe.add(u);
 		
 	}
+	
+	
     
   
    

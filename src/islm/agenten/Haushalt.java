@@ -4,6 +4,7 @@ package islm.agenten;
 import java.util.ArrayList;
 import java.util.List;
 
+import islm.DemandConstraint;
 import islm.SessionManager;
 import repast.simphony.engine.schedule.ScheduleParameters;
 import repast.simphony.engine.schedule.ScheduledMethod;
@@ -15,12 +16,20 @@ public class Haushalt {
 	
 	private double reservationsGehalt; //wh
 	
+	private double aktuellesGehalt;
+	
 	private List<Unternehmen> consumptionsFirms = new ArrayList<>(); //Type a Verbindungen
+	
+	private List<DemandConstraint> lastPeriodsDemandConstraints = new ArrayList<>();
+
 	
 	private Unternehmen arbeitGeber; //typ b verbindung
 	
 	private static final double PSI_PRICE = 0.25;
-	private static final double XI = 0.25;
+	private static final double PSI_QUANT = 0.25;
+	private static final double XI = 0.01;
+	private static final int BETA = 5;
+	private static final double PI = 0.1;
 	
 	//this method is not being called automatically by repast but is being called from the islm builder in order to
 	//ensure that the households are getting called in random order
@@ -33,25 +42,70 @@ public class Haushalt {
     	    Unternehmen pickedToReplace = consumptionsFirms.get(index);
     	    
     	    //now pick one from the firms you have no connections with
-    	    List<Unternehmen> firmsWithNoConnection = new ArrayList<>(SessionManager.getUnternehmenListe());
-    	    firmsWithNoConnection.removeAll(consumptionsFirms);
     	    
-    	    Unternehmen newPick = pickFirmProportionalToWorkers(firmsWithNoConnection);
+    	    
+    	    Unternehmen newPick = pickFirmProportionalToWorkers();
     	    
     	    //replace unternehmen if it makes sense
     	    if(pickedToReplace.getPreis() < newPick.getPreis() * (1-XI)) {
     	    	consumptionsFirms.remove(pickedToReplace);
     	    	consumptionsFirms.add(newPick);
     	    }
-    	    
     	}
+    	//Now the household might replace companies that had demand constraints in last period
+    	if (!lastPeriodsDemandConstraints.isEmpty() && RandomHelper.nextDouble() < PSI_QUANT) {
+    		Unternehmen selectedCompanyWithDemandIssues = pickFirmProportionalToDemandRestriction();
+    		Unternehmen newPick = pickFirmProportionalToWorkers();
+    		consumptionsFirms.remove(selectedCompanyWithDemandIssues);
+	    	consumptionsFirms.add(newPick);
+    	}
+    	
+    	//Job search
+    	
+    	
+    	if(arbeitGeber == null) {
+    		//if you are unemployed check BETA firms, to find new employment
+    		for(int i = 1; i <= BETA; i++) {
+    			Unternehmen u = SessionManager.getRandomUnternehmen();
+    			if(u.getOpenPosition() && u.getGehalt() >= reservationsGehalt) {
+    				acceptPositionAt(u);
+    				break;
+    			}
+    		}
+    	}else if(aktuellesGehalt >= reservationsGehalt) {
+    		//Employee is happily working however he might still check with probability pi (not the circle thing) for better jobs
+    		if(RandomHelper.nextDouble() < PI) {
+    			Unternehmen u = SessionManager.getRandomUnternehmen();
+    			if(u.getOpenPosition() && u.getGehalt() >= aktuellesGehalt) {
+    				acceptPositionAt(u);
+    			}
+    		}
+    	}else if(aktuellesGehalt < reservationsGehalt) {
+    		//if you are getting less then your reservationsGehalt always search for at least one position
+    		Unternehmen u = SessionManager.getRandomUnternehmen();
+			if(u.getOpenPosition() && u.getGehalt() >= aktuellesGehalt) {
+				acceptPositionAt(u);
+			}
+    	}
+    	
+    	
+    	
     	
     	
     }
     
     
     
-    /**
+    private void acceptPositionAt(Unternehmen u) {
+    	//TODO make sure this is right
+		u.empfangeBewerbungAufArbeit(this);
+		arbeitGeber = u;
+		
+	}
+
+
+
+	/**
      * Randomly selects a firm from the given list with probability proportional
      * to the number of workers in each firm.
      * <p>
@@ -60,13 +114,15 @@ public class Haushalt {
      * Firms with more workers are more likely to be chosen.
      * </p>
      *
-     * @param unternehmen the list of firms to choose from
+     * 
      * @return a randomly selected firm based on worker-weighted probability,
      *         or {@code null} if the total number of workers is zero
      */
-    public Unternehmen pickFirmProportionalToWorkers(List<Unternehmen> unternehmen) {
+    public Unternehmen pickFirmProportionalToWorkers() {
+    	List<Unternehmen> firmsWithNoConnection = new ArrayList<>(SessionManager.getUnternehmenListe());
+	    firmsWithNoConnection.removeAll(consumptionsFirms);
         // Step 1: compute total weight
-        int totalWorkers = unternehmen.stream().mapToInt(Unternehmen::getNumberOfWorkers).sum();
+        int totalWorkers = firmsWithNoConnection.stream().mapToInt(Unternehmen::getNumberOfWorkers).sum();
         if (totalWorkers == 0) return null; // no selection possible
 
         // Step 2: generate a random value in [0, totalWorkers)
@@ -74,7 +130,7 @@ public class Haushalt {
 
         // Step 3: iterate and subtract weights until we cross r
         double cumulative = 0.0;
-        for (Unternehmen u : unternehmen) {
+        for (Unternehmen u : firmsWithNoConnection) {
             cumulative += u.getNumberOfWorkers();
             if (r < cumulative) {
                 return u;
@@ -82,8 +138,40 @@ public class Haushalt {
         }
 
         // Fallback (shouldn't happen unless rounding issues)
-        return unternehmen.get(unternehmen.size() - 1);
+        return firmsWithNoConnection.get(firmsWithNoConnection.size() - 1);
     }
 	
+    /**
+     * Randomly selects a firm (Unternehmen) from the list of last period's demand constraints,
+     * with the probability of selecting each firm being proportional to the value of its
+     * demand restriction.
+     * <p>
+     * This implements a weighted random selection where each {@code DemandConstraint} acts as a weight
+     * source via {@code getRestriktion()}, and the associated {@code Unternehmen} is returned.
+     * </p>
+     *
+     * @return a randomly selected {@code Unternehmen}, weighted by demand restriction,
+     *         or {@code null} if the total weight is zero
+     */
+    public Unternehmen pickFirmProportionalToDemandRestriction() {
+        // Step 1: compute total weight
+        double totalRestriktion = lastPeriodsDemandConstraints.stream().mapToDouble(DemandConstraint::getRestriktion).sum();
+        if (totalRestriktion == 0) return null; // no selection possible
+
+        // Step 2: generate a random value in [0, totalWorkers)
+        double r = RandomHelper.nextDoubleFromTo(0, totalRestriktion);
+
+        // Step 3: iterate and subtract weights until we cross r
+        double cumulative = 0.0;
+        for (DemandConstraint dc : lastPeriodsDemandConstraints) {
+            cumulative += dc.getRestriktion();
+            if (r < cumulative) {
+                return dc.getUnternehmen();
+            }
+        }
+
+        // Fallback (shouldn't happen unless rounding issues)
+        return lastPeriodsDemandConstraints.get(lastPeriodsDemandConstraints.size() - 1).getUnternehmen();
+    }
     
 }
