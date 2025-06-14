@@ -20,20 +20,33 @@ public class Haushalt {
 	private Unternehmen arbeitGeber; //typ b verbindung
 	
 	private static final double PSI_PRICE = 0.25;
+	private static final double XI = 0.25;
 	
 	//this method is not being called automatically by repast but is being called from the islm builder in order to
 	//ensure that the households are getting called in random order
     public void beginningOfMonth() {
-    	//household searches for cheapest place to buy stuff
     	
+    	//household searches for cheapest place to buy stuff and may replace his old trading relations with new ones
     	if (!consumptionsFirms.isEmpty() && RandomHelper.nextDouble() < PSI_PRICE) {
     		//first pick within firms that you have type a connections with
     		int index = RandomHelper.nextIntFromTo(0, consumptionsFirms.size() - 1);
-    	    Unternehmen picked = consumptionsFirms.get(index);
+    	    Unternehmen pickedToReplace = consumptionsFirms.get(index);
     	    
     	    //now pick one from the firms you have no connections with
+    	    List<Unternehmen> firmsWithNoConnection = new ArrayList<>(SessionManager.getUnternehmenListe());
+    	    firmsWithNoConnection.removeAll(consumptionsFirms);
+    	    
+    	    Unternehmen newPick = pickFirmProportionalToWorkers(firmsWithNoConnection);
+    	    
+    	    //replace unternehmen if it makes sense
+    	    if(pickedToReplace.getPreis() < newPick.getPreis() * (1-XI)) {
+    	    	consumptionsFirms.remove(pickedToReplace);
+    	    	consumptionsFirms.add(newPick);
+    	    }
     	    
     	}
+    	
+    	
     }
     
     

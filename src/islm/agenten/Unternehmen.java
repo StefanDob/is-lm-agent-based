@@ -146,6 +146,10 @@ public class Unternehmen {
 	public int getNumberOfWorkers() {
 		return typeBPartners.size();
 	}
+	
+	public double getPreis() {
+		return preis;
+	}
     
     
     

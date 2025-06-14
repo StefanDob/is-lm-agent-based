@@ -39,6 +39,16 @@ public class SessionManager {
     public static void setHausHaltListe(List<Haushalt> neueHausHaltListe) {
         hausHaltListe = neueHausHaltListe;
     }
+
+	public static void registriereHaushalt(Haushalt h) {
+		hausHaltListe.add(h);
+		
+	}
+
+	public static void registriereUnternehmen(Unternehmen u) {
+		unternehmenListe.add(u);
+		
+	}
     
   
    
