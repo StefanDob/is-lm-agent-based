@@ -12,7 +12,7 @@ public class Unternehmen {
 	private double liquiditaet;
 	private double preis = 0;
     private double gehalt = 0;; 
-    private int inventar = 0;
+    private int inventar = 0; //keeping track of it product and not in money
     
     private double nachfrageLetzterMonat = 0; //TODO make sure this gets set
     private double marginaleKosten = 0;
@@ -26,6 +26,7 @@ public class Unternehmen {
     
     private static final double UPPER_PHI_PRICE = 1.15;
     private static final double LOWER_PHI_PRICE = 0.025;
+    private static final double LAMBDA = 3;
     
     private static final double THETA = 0.75; //propability of changing price if inventory is not in bounds
     private static final double theta = 0.02;
@@ -34,6 +35,15 @@ public class Unternehmen {
     private List<Haushalt> typeBPartners = new ArrayList<>(); // employment
     
     private boolean workerNeedsToBeFired = false;
+    
+    
+    //TODO check wether LAstpriority fits here; i only put it there because the descriptionof what the firms do come after the description of what the people do
+    @ScheduledMethod(start = 1, interval = 1, priority = ScheduleParameters.LAST_PRIORITY)
+    public void dayStep() {
+    	//each firm produces according to the production function
+    	double numberOfWorkers = typeBPartners.size();
+    	inventar += LAMBDA * numberOfWorkers;
+    }
 
     
     
@@ -85,6 +95,15 @@ public class Unternehmen {
     	}
     	
     	
+    }
+    
+    @ScheduledMethod(start=1, interval=21, priority=ScheduleParameters.LAST_PRIORITY)
+    public void finalizeMonth() {
+        //pay wages
+    	
+    	//build buffer for bad times
+    	
+    	//pay profits
     }
     
     
@@ -159,12 +178,43 @@ public class Unternehmen {
 	public double getGehalt() {
 		return gehalt;
 	}
+	
+	public double getInventar() {
+		return inventar;
+	}
 
 
 	public void empfangeBewerbungAufArbeit(Haushalt haushalt) {
 		// TODO Auto-generated method stub 
 		
 	}
+
+
+	/**
+	 * Attempts to fulfill a customer's purchase request based on their planned consumption spending.
+	 * The method calculates the quantity of goods the customer wants to buy, and checks whether the
+	 * firm's current inventory can meet that demand. If the inventory is sufficient, the full quantity
+	 * is sold. Otherwise, the firm sells all remaining inventory.
+	 *
+	 * @param plannedConsumptionSpending the amount of money the customer is willing to spend
+	 * @return the actual amount of product the customer got
+	 */
+	public double attemptPurchaseForAmount(double plannedConsumptionSpending) {
+	    double wantedInventory = plannedConsumptionSpending / preis;
+
+	    double quantitySold;
+	    if (wantedInventory <= inventar) {
+	        quantitySold = wantedInventory;
+	    } else {
+	        quantitySold = inventar;
+	    }
+
+	    inventar -= quantitySold;
+	    //TODO make one variable
+	    liquiditaet += quantitySold * preis; 
+	    return quantitySold;
+	}
+
 	
     
     

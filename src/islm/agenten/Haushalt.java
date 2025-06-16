@@ -25,11 +25,47 @@ public class Haushalt {
 	
 	private Unternehmen arbeitGeber; //typ b verbindung
 	
+	private double perMonthConsumption; //consumption per month: this is given in goods and not in money
+	
 	private static final double PSI_PRICE = 0.25;
 	private static final double PSI_QUANT = 0.25;
 	private static final double XI = 0.01;
 	private static final int BETA = 5;
 	private static final double PI = 0.1;
+	private static final double ALPHA = 0.9;
+	private static final double N = 7;
+	
+	
+	
+	public void dayStep() {
+		//daily consumption
+		double satisfiedConsumption = 0;
+		double plannedDailyDemandInGoods = perMonthConsumption / 21;
+		double minSatisfaction = plannedDailyDemandInGoods * 0.95;
+
+		for(int i = 1; i <= N && satisfiedConsumption < minSatisfaction ; i++) {
+			Unternehmen u = SessionManager.getRandomUnternehmen();
+			double expectedCostForConsumption = u.getPreis() * plannedDailyDemandInGoods;
+			double plannedConsumptionSpending;
+			
+			if(expectedCostForConsumption < liquiditaet) {
+				//i have enough money to buy it so i will try to buy it
+				plannedConsumptionSpending = expectedCostForConsumption;
+			}else {
+				
+				plannedConsumptionSpending = liquiditaet;
+			}
+			
+			double quantityBought = u.attemptPurchaseForAmount(plannedConsumptionSpending);
+			
+			liquiditaet -= quantityBought * u.getPreis();
+			satisfiedConsumption += quantityBought;
+		}
+		
+		
+		
+		
+	}
 	
 	//this method is not being called automatically by repast but is being called from the islm builder in order to
 	//ensure that the households are getting called in random order
@@ -88,15 +124,32 @@ public class Haushalt {
 			}
     	}
     	
+    	//plan your money supply: liquidity, consumption etc
+    	double ph = computeAverageCostOfAllConsumptionGoods();
     	
-    	
-    	
+    	perMonthConsumption = Math.min(Math.pow(liquiditaet / ph, ALPHA), liquiditaet / ph);)
     	
     }
     
     
     
-    private void acceptPositionAt(Unternehmen u) {
+    /**
+     * Computes the average price of all consumption goods from the type A connected firms.
+     *
+     * @return the average price, or 0.0 if the list is empty (fallback default)
+     */
+    private double computeAverageCostOfAllConsumptionGoods() {
+        double sumOfPrices = 0;
+        for (Unternehmen u : consumptionsFirms) {
+            sumOfPrices += u.getPreis();
+        }
+
+        return sumOfPrices / consumptionsFirms.size();
+    }
+
+
+
+	private void acceptPositionAt(Unternehmen u) {
     	//TODO make sure this is right
 		u.empfangeBewerbungAufArbeit(this);
 		arbeitGeber = u;
