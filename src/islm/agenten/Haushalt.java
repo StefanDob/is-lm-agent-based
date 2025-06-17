@@ -127,8 +127,16 @@ public class Haushalt {
     	//plan your money supply: liquidity, consumption etc
     	double ph = computeAverageCostOfAllConsumptionGoods();
     	
-    	perMonthConsumption = Math.min(Math.pow(liquiditaet / ph, ALPHA), liquiditaet / ph);)
+    	perMonthConsumption = Math.min(Math.pow(liquiditaet / ph, ALPHA), liquiditaet / ph);
     	
+    }
+    
+    @ScheduledMethod(start=1, interval=21, priority=ScheduleParameters.LAST_PRIORITY)
+    public void finalizeMonth() {
+    	//if you did not have work this month reduce reservation wage by 10 %
+    	if(arbeitGeber == null) {
+    		reservationsGehalt = reservationsGehalt * 0.9;
+    	}
     }
     
     
@@ -226,5 +234,23 @@ public class Haushalt {
         // Fallback (shouldn't happen unless rounding issues)
         return lastPeriodsDemandConstraints.get(lastPeriodsDemandConstraints.size() - 1).getUnternehmen();
     }
+
+	public void empfangeGehalt(double gehalt) {
+		liquiditaet += gehalt;
+		
+		//sollte das Gehalt größer sein, als das Reservationsgehalt wird das reservationsgehalt hochgesetzt
+		if(gehalt > reservationsGehalt) {
+			reservationsGehalt = gehalt;
+		}
+	}
+	
+	public void empfangeProfit(double profit) {
+		liquiditaet += profit;
+		
+	}
+	
+	public double getLiquiditaet(){
+		return liquiditaet;
+	}
     
 }

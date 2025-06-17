@@ -30,6 +30,7 @@ public class Unternehmen {
     
     private static final double THETA = 0.75; //propability of changing price if inventory is not in bounds
     private static final double theta = 0.02;
+    private static final double HI = 0.1;
     
     private List<Unternehmen> typeAPartners = new ArrayList<>(); //buy consumption goods 
     private List<Haushalt> typeBPartners = new ArrayList<>(); // employment
@@ -100,6 +101,25 @@ public class Unternehmen {
     @ScheduledMethod(start=1, interval=21, priority=ScheduleParameters.LAST_PRIORITY)
     public void finalizeMonth() {
         //pay wages
+    	if( gehalt * typeBPartners.size() <= liquiditaet) {
+    		// genug geld um arbeiter zu bezahlen
+    		liquiditaet -= gehalt * typeBPartners.size();
+    		for(Haushalt h : typeBPartners) {
+    			h.empfangeGehalt(gehalt);
+    		}
+    		//try to do a liquiditaet buffer
+    		double expectedliquidityBuffer = HI * gehalt * typeBPartners.size();
+    		double profit = Math.max(0, liquiditaet - expectedliquidityBuffer);
+    		
+    		SessionManager.allocateProfits(profit);
+    	}else {
+    		//firm does not have enough money to pay wages - wage cuts are needed
+    		double kriesenGehalt = liquiditaet / typeBPartners.size();
+    		for(Haushalt h : typeBPartners) {
+    			h.empfangeGehalt(kriesenGehalt);
+    		}
+    	}
+    	
     	
     	//build buffer for bad times
     	
@@ -110,7 +130,7 @@ public class Unternehmen {
     private Haushalt fireRandomWorker() {
     	if (typeBPartners == null || typeBPartners.isEmpty()) return null;
 
-        int index = RandomHelper.nextInt(typeBPartners.size());
+    	int index = RandomHelper.nextIntFromTo(0, typeBPartners.size() - 1);
         return typeBPartners.remove(index);
 		
 	}

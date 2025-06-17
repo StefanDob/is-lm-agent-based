@@ -54,6 +54,36 @@ public class SessionManager {
 		unternehmenListe.add(u);
 		
 	}
+
+
+	/**
+	 * Distributes a given amount of profit among all households in {@code haushaltsListe},
+	 * with each household receiving a share proportional to its current liquidity.
+	 * <p>
+	 * The total liquidity of all households is calculated, and each household receives:
+	 * <pre>
+	 *   share = (household.liquidity / totalLiquidity) * profit
+	 * </pre>
+	 * If the total liquidity is zero or the profit is non-positive, no distribution occurs.
+	 * </p>
+	 *
+	 * @param profit the total amount of profit to be distributed (must be > 0)
+	 */
+	public static void allocateProfits(double profit) {
+	    if (profit <= 0 || hausHaltListe.isEmpty()) return;
+
+	    double totalLiquidity = hausHaltListe.stream()
+	        .mapToDouble(Haushalt::getLiquiditaet)
+	        .sum();
+
+	    if (totalLiquidity == 0) return;
+
+	    for (Haushalt h : hausHaltListe) {
+	        double share = (h.getLiquiditaet() / totalLiquidity) * profit;
+	        h.empfangeProfit(share);
+	    }
+	}
+
 	
 	
     
