@@ -7,6 +7,7 @@ import islm.agenten.Haushalt;
 import islm.agenten.HuashaltCallerHelper;
 import islm.agenten.Unternehmen;
 import islm.export.CSVExporter;
+import islm.export.ExportManager;
 import repast.simphony.context.Context;
 import repast.simphony.dataLoader.ContextBuilder;
 import repast.simphony.engine.environment.RunEnvironment;
@@ -39,8 +40,8 @@ public class ISLMBuilder implements ContextBuilder<Object> {
         
         
        //Setup exporter
-        CSVExporter exporter = new CSVExporter();
-        context.add(exporter);
+        ExportManager exportManager = new ExportManager();
+        context.add(exportManager);
         
         
         // 7000 months * 21 daysPerMonth 

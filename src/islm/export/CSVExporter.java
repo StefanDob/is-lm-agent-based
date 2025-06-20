@@ -26,7 +26,7 @@ public class CSVExporter {
         }
     }
 
-    @ScheduledMethod(start = 1, interval = 1, priority = 2.0)
+   
     public void exportDailyData() {
         try (FileWriter fw = new FileWriter(dailyFilePath, true);
              BufferedWriter bw = new BufferedWriter(fw)) {
@@ -49,7 +49,7 @@ public class CSVExporter {
         }
     }
 
-    @ScheduledMethod(start = 1, interval = 21, priority = 2.0)
+    
     public void exportMonthlyData() {
         try (FileWriter fw = new FileWriter(monthlyFilePath, true);
              BufferedWriter bw = new BufferedWriter(fw)) {
@@ -75,4 +75,6 @@ public class CSVExporter {
             e.printStackTrace();
         }
     }
+    
+    
 }
