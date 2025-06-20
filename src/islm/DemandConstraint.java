@@ -11,6 +11,9 @@ public class DemandConstraint {
 	public DemandConstraint(Unternehmen unternehmen, double restriktion) {
 		this.unternehmen = unternehmen;
 		this.restriktion = restriktion;
+		if(restriktion <= 0) {
+			throw new RuntimeException("Bad restriktion: " + restriktion);
+		}
 	}
 	
 	

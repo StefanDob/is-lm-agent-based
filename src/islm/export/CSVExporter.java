@@ -1,65 +1,78 @@
 package islm.export;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import repast.simphony.engine.schedule.ScheduledMethod;
+import java.io.*;
+import java.nio.file.*;
+import java.util.List;
 
 import islm.SessionManager;
-import repast.simphony.engine.environment.RunEnvironment;
-import repast.simphony.engine.schedule.ScheduledMethod;
+import islm.agenten.Haushalt;
 
 public class CSVExporter {
-	/*
-    private final String filePath = "output/islm_output.csv";
-    private boolean headerWritten = false;
-    
+
+    private final String dailyFilePath = "output/islm_daily_output.csv";
+    private final String monthlyFilePath = "output/islm_monthly_output.csv";
+
+    private boolean dailyHeaderWritten = false;
+    private boolean monthlyHeaderWritten = false;
+
     public CSVExporter() {
-    	File file = new File(filePath);
-    	
-    	// Delete existing file if it exists
-        if (file.exists()) {
-            boolean deleted = file.delete();
-            if (!deleted) {
-                System.err.println("Warning: Could not delete existing file at " + filePath);
-            }
-        }
-    }
-
-    
-    @ScheduledMethod(start = 1, interval = 1, priority = 2.0)
-    public void exportData() {
         try {
-            File file = new File(filePath);
-            boolean isNewFile = !file.exists();
-
-            try (FileWriter writer = new FileWriter(file, true)) {
-
-                // Kopfzeile nur einmal schreiben
-                if (isNewFile || !headerWritten) {
-                    writer.append("Tick,Zentralbankzins,Realzins,Investition,Konsum,Staatsausgaben,Aktive Kerdite,Kredit Anfragen,Anzahl Unternehmen\n");
-                    headerWritten = true;
-                }
-
-                int tick = (int) RunEnvironment.getInstance().getCurrentSchedule().getTickCount();
-
-                double zentralbankZins = Zentralbank.getZinsSatz();
-                double realZins = SessionManager.getBank().getMarktZins();
-                double investition = DataCollecter.getInvestition();
-                double konsum = DataCollecter.getKonsum();
-                double staatsausgaben = SessionManager.getStaat().getStaatsausgaben();
-                double aktiveKredite = SessionManager.getBank().getAktiveKredite().size();
-                double kreditAnfragen = SessionManager.getBank().getKreditAnfragen().size();
-                double anzahlUnternehmen = SessionManager.getUnternehmenListe().size();
-                
-                
-                String line = tick + "," + zentralbankZins + "," + realZins + "," + investition + "," + konsum + "," + staatsausgaben + "," + aktiveKredite + "," + kreditAnfragen + 
-                	"," + anzahlUnternehmen  + "\n";
-
-                writer.append(line);
-            }
+            Files.createDirectories(Paths.get("output"));
+            Files.deleteIfExists(Paths.get(dailyFilePath));
+            Files.deleteIfExists(Paths.get(monthlyFilePath));
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-    */
+
+    @ScheduledMethod(start = 1, interval = 1, priority = 2.0)
+    public void exportDailyData() {
+        try (FileWriter fw = new FileWriter(dailyFilePath, true);
+             BufferedWriter bw = new BufferedWriter(fw)) {
+
+            if (!dailyHeaderWritten) {
+                bw.write("tick, unmetDemandRatio \n");
+                dailyHeaderWritten = true;
+            }
+
+            double tick = repast.simphony.engine.environment.RunEnvironment.getInstance()
+                    .getCurrentSchedule().getTickCount();
+
+            
+            
+            bw.write(tick + "," + DataCollecter.getUnmetDemandRatioDurchschnitt() + "\n");
+            
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @ScheduledMethod(start = 1, interval = 21, priority = 2.0)
+    public void exportMonthlyData() {
+        try (FileWriter fw = new FileWriter(monthlyFilePath, true);
+             BufferedWriter bw = new BufferedWriter(fw)) {
+
+            if (!monthlyHeaderWritten) {
+            	bw.write("tick,employed_households(Über Haushalte), BeschäftigteLeute (über Unternehmen), open Positions,durchschnittsgehalt,Durchschnittspreis,Durchschnittsinventar,gesamtNachfrageLetzerMonat, "
+            			+ "gepl. mon. KOnsum (Haushalte), allUnternehmenMoney, allHaushalteMoney, allMoney\n");
+               
+                monthlyHeaderWritten = true;
+            }
+
+            double tick = repast.simphony.engine.environment.RunEnvironment.getInstance()
+                    .getCurrentSchedule().getTickCount();
+
+            int employed = DataCollecter.getEmployedCount(); // You implement this method
+
+            bw.write(tick + "," + employed + "," + DataCollecter.beschäftigteLeute() + "," + DataCollecter.getOpenPositions() +  "," + DataCollecter.getDurchschnittsgehalt() + "," + DataCollecter.getDurchSchnittspreis() +
+            		"," + DataCollecter.getDurchSchnittsinventar() + ","  + DataCollecter.getGesamtNachfrage() +
+            		"," + DataCollecter.getGeplanterMonatlicherKonsum() + "," + DataCollecter.getAllUnternehmenMoney() + ","+ DataCollecter.getAllHouseholdMoney() + 
+            		","  +DataCollecter.getAllMoney() +"\n");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

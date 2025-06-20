@@ -4,6 +4,7 @@ import java.util.*;
 
 
 import islm.agenten.Haushalt;
+import islm.agenten.HuashaltCallerHelper;
 import islm.agenten.Unternehmen;
 import islm.export.CSVExporter;
 import repast.simphony.context.Context;
@@ -17,28 +18,33 @@ public class ISLMBuilder implements ContextBuilder<Object> {
     @Override
     public Context<Object> build(Context<Object> context) {
         context.setId("islm");
-       
-        for (int i = 0; i < 70; i++) {
-            Haushalt h = new Haushalt();
-            context.add(h);
-            SessionManager.registriereHaushalt(h);
-        }
-		
-        int anzahlUnternehmen = 20;
-        double startKapitalProUnternehmen = Zentralbank.getGeldMenge() / anzahlUnternehmen;
         
-        for (int i = 0; i < 10; i++) {
-            Unternehmen u = new Unternehmen();
+        for (int i = 0; i < 100; i++) {
+            Unternehmen u = new Unternehmen(1000);
             context.add(u);
             SessionManager.registriereUnternehmen(u);
         }
+       
+        for (int i = 0; i < 1000; i++) {
+        	
+            Haushalt h = new Haushalt(100,createListOfRandomCompanies());
+            context.add(h);
+            SessionManager.registriereHaushalt(h);
+        }
+        
+        HuashaltCallerHelper helper = new HuashaltCallerHelper();
+        context.add(helper);
+        
+        
         
         
        //Setup exporter
         CSVExporter exporter = new CSVExporter();
         context.add(exporter);
         
-        RunEnvironment.getInstance().endAt(1000);
+        
+        // 7000 months * 21 daysPerMonth 
+        RunEnvironment.getInstance().endAt(7000 * 21);
         
         
         
@@ -92,26 +98,14 @@ public class ISLMBuilder implements ContextBuilder<Object> {
     }
     
     
-    //this method is called here instead of in the household classes in order to make sure that the houselholds are picked in 
-    //random order to seek new trading connections
-    @ScheduledMethod(start = 1, interval = 21, priority = 0)
-    public void beginningOfMonth() {
-    	List<Haushalt> shuffledHouseholds = new ArrayList<>(SessionManager.getHausHaltListe());
-    	Collections.shuffle(shuffledHouseholds);
-    	for(Haushalt h : shuffledHouseholds) {
-    		h.beginningOfMonth();
-    	}
-    }
-    
-    
-  //this method is called here instead of in the household classes in order to make sure that the houselholds are picked in 
-    //random order to execute their daily demands
-    @ScheduledMethod(start = 1, interval = 1, priority = ScheduleParameters.FIRST_PRIORITY)
-    public void dayStep() {
-    	List<Haushalt> shuffledHouseholds = new ArrayList<>(SessionManager.getHausHaltListe());
-    	Collections.shuffle(shuffledHouseholds);
-    	for(Haushalt h : shuffledHouseholds) {
-    		h.dayStep();
-    	}
-    }
+    private List<Unternehmen> createListOfRandomCompanies() {
+		List<Unternehmen> returnList = new ArrayList<>();
+		for(int i = 0; i < 8; i++) {
+			returnList.add(SessionManager.getRandomUnternehmen());
+		}
+		return returnList;
+	}
+
+
+	
 }

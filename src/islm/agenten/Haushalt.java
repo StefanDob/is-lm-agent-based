@@ -3,6 +3,7 @@ package islm.agenten;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import islm.DemandConstraint;
 import islm.SessionManager;
@@ -14,9 +15,9 @@ public class Haushalt {
 	
 	private double liquiditaet; // mh
 	
-	private double reservationsGehalt; //wh
+	private double reservationsGehalt = 0; //wh
 	
-	private double aktuellesGehalt;
+	private double aktuellesGehalt = 0;
 	
 	private List<Unternehmen> consumptionsFirms = new ArrayList<>(); //Type a Verbindungen
 	
@@ -27,6 +28,8 @@ public class Haushalt {
 	
 	private double perMonthConsumption; //consumption per month: this is given in goods and not in money
 	
+	private double unmetDemandRatio = 1;
+	
 	private static final double PSI_PRICE = 0.25;
 	private static final double PSI_QUANT = 0.25;
 	private static final double XI = 0.01;
@@ -34,6 +37,12 @@ public class Haushalt {
 	private static final double PI = 0.1;
 	private static final double ALPHA = 0.9;
 	private static final double N = 7;
+	
+	
+	public Haushalt(double liquiditaet,List<Unternehmen> consumptionsFirms) {
+		this.liquiditaet = liquiditaet;
+		this.consumptionsFirms = consumptionsFirms;
+	}
 	
 	
 	
@@ -49,7 +58,7 @@ public class Haushalt {
 			double plannedConsumptionSpending;
 			
 			if(expectedCostForConsumption < liquiditaet) {
-				//i have enough money to buy it so i will try to buy it
+				//I have enough money to buy it so i will try to buy it
 				plannedConsumptionSpending = expectedCostForConsumption;
 			}else {
 				
@@ -58,7 +67,14 @@ public class Haushalt {
 			
 			double quantityBought = u.attemptPurchaseForAmount(plannedConsumptionSpending);
 			
+			if(quantityBought * u.getPreis() < plannedConsumptionSpending) {
+				//register a demand constraint
+				unmetDemandRatio =  ( quantityBought * u.getPreis() / plannedConsumptionSpending);
+				lastPeriodsDemandConstraints.add(new DemandConstraint(u, plannedConsumptionSpending - quantityBought * u.getPreis()));
+			}
+			
 			liquiditaet -= quantityBought * u.getPreis();
+			
 			satisfiedConsumption += quantityBought;
 		}
 		
@@ -82,10 +98,12 @@ public class Haushalt {
     	    
     	    Unternehmen newPick = pickFirmProportionalToWorkers();
     	    
+    	    
     	    //replace unternehmen if it makes sense
-    	    if(pickedToReplace.getPreis() < newPick.getPreis() * (1-XI)) {
+    	    if(newPick != null && pickedToReplace.getPreis() < newPick.getPreis() * (1-XI)) {
     	    	consumptionsFirms.remove(pickedToReplace);
     	    	consumptionsFirms.add(newPick);
+    	    	consumptionsFirms.removeIf(Objects::isNull);
     	    }
     	}
     	//Now the household might replace companies that had demand constraints in last period
@@ -94,6 +112,7 @@ public class Haushalt {
     		Unternehmen newPick = pickFirmProportionalToWorkers();
     		consumptionsFirms.remove(selectedCompanyWithDemandIssues);
 	    	consumptionsFirms.add(newPick);
+	    	consumptionsFirms.removeIf(Objects::isNull);
     	}
     	
     	//Job search
@@ -129,6 +148,8 @@ public class Haushalt {
     	
     	perMonthConsumption = Math.min(Math.pow(liquiditaet / ph, ALPHA), liquiditaet / ph);
     	
+    	// as the new months jobs all have completed reset the demand constraints
+    	lastPeriodsDemandConstraints.clear();
     }
     
     @ScheduledMethod(start=1, interval=21, priority=ScheduleParameters.LAST_PRIORITY)
@@ -137,6 +158,8 @@ public class Haushalt {
     	if(arbeitGeber == null) {
     		reservationsGehalt = reservationsGehalt * 0.9;
     	}
+    	
+    	
     }
     
     
@@ -160,8 +183,7 @@ public class Haushalt {
 	private void acceptPositionAt(Unternehmen u) {
     	//TODO make sure this is right
 		u.empfangeBewerbungAufArbeit(this);
-		arbeitGeber = u;
-		
+		aktuellesGehalt = u.getGehalt();		
 	}
 
 
@@ -252,5 +274,37 @@ public class Haushalt {
 	public double getLiquiditaet(){
 		return liquiditaet;
 	}
+
+	//this method is getting called to notify the household it got fired
+	public void notifyFired() {
+		arbeitGeber = null;
+	}
+	
+	public Unternehmen getArbeitGeber() {
+		return arbeitGeber;
+	}
+
+
+
+	public double getUnmetDemandRatio() {
+		return unmetDemandRatio;
+	}
+	
+	public double getPerMonthKonsumption() {
+		return perMonthConsumption;
+	}
+
+
+
+	public void notifyHired(Unternehmen unternehmen) {
+		//first notify the old Arbeitgeber that you got hired if necessary and that you thereby Quit
+		if(arbeitGeber != null) {
+			arbeitGeber.notifyQuitting(this);
+		}
+		arbeitGeber = unternehmen;
+	}
+
+
+
     
 }

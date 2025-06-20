@@ -10,14 +10,18 @@ import islm.SessionManager;
 
 public class Unternehmen {
 	private double liquiditaet;
-	private double preis = 0;
-    private double gehalt = 0;; 
-    private int inventar = 0; //keeping track of it product and not in money
+	private double preis = 1;
+    private double gehalt = 1; // set it to one unit in the start so that the model does not brake
+    private int inventar = 1; //keeping track of it product and not in money
     
-    private double nachfrageLetzterMonat = 0; //TODO make sure this gets set
+    private double nachfrageLetzterMonat = 0; 
     private double marginaleKosten = 0;
     
     private int durchgehendeEinstellungsmonate = 0; //anzahl an monaten in denen durchgehend leute eingestellt wurden
+    
+    private int openPositions = 0;
+    
+    private boolean einstellungDiesenMonat = false;
     
     private static final int GAMMA = 3; //anzahl an aufeinanderfolgenden monaten in denen konsequent leute eingestellt wurden
     private static final double DELTA = 0.019; //boundries of distribution to increase wage
@@ -32,17 +36,23 @@ public class Unternehmen {
     private static final double theta = 0.02;
     private static final double HI = 0.1;
     
-    private List<Unternehmen> typeAPartners = new ArrayList<>(); //buy consumption goods 
     private List<Haushalt> typeBPartners = new ArrayList<>(); // employment
     
     private boolean workerNeedsToBeFired = false;
     
+    private double profit = 0;
     
-    //TODO check wether LAstpriority fits here; i only put it there because the descriptionof what the firms do come after the description of what the people do
-    @ScheduledMethod(start = 1, interval = 1, priority = ScheduleParameters.LAST_PRIORITY)
+    public Unternehmen(double liquiditaet) {
+		this.liquiditaet = liquiditaet;
+	}
+    
+    
+    //put it there because the descriptionof what the firms do come after the description of what the people do
+    @ScheduledMethod(start = 1, interval = 1, priority = 0)
     public void dayStep() {
     	//each firm produces according to the production function
     	double numberOfWorkers = typeBPartners.size();
+    	
     	inventar += LAMBDA * numberOfWorkers;
     }
 
@@ -55,9 +65,11 @@ public class Unternehmen {
     	//fire people if you have to do so because of last periods
     	if(workerNeedsToBeFired) {
     		fireRandomWorker();
+    		workerNeedsToBeFired = false;
+    		
     	}
     	
-    	//adjust wages based on months without hiring
+    	//adjust wages based on months with hiring
     	if (durchgehendeEinstellungsmonate == 0) {
     		//im letzen monat wurde niemand eingestellt
             adjustWage(true); // increase wage
@@ -70,6 +82,8 @@ public class Unternehmen {
     	double upperBarrierInventory = UPPER_PHI_INVENTORIES * nachfrageLetzterMonat;
     	double lowerBarrierInventory = LOWER_PHI_INVENTORIES * nachfrageLetzterMonat;
     	
+    	
+    	marginaleKosten = gehalt / LAMBDA;
     	double upperBarrierPrice = UPPER_PHI_PRICE * marginaleKosten;
     	double lowerBarrierPrice = LOWER_PHI_PRICE * marginaleKosten;
     	
@@ -83,9 +97,10 @@ public class Unternehmen {
     				adjustPrice(false); //decrease prce
     			}
     		}
-    	}else if(inventar < lowerBarrierInventory) {
+    	}else if(inventar <= lowerBarrierInventory) {
     		//create new position to raise production
-    		addTypeBPartner(new Haushalt()); //TODO fix this to not add a new household but to create opportunity for households to apply
+    		openPositions++;
+    		//addTypeBPartner(new Haushalt()); //TODO fix this to not add a new household but to create opportunity for households to apply
     		if(preis > upperBarrierPrice) {
     			//increase price with probability Thita
     			if (RandomHelper.nextDouble() < THETA) {
@@ -95,12 +110,16 @@ public class Unternehmen {
     		
     	}
     	
+    	//reset Nachfrage letzter Monat to 0 after new Month has started
+    	
+    	nachfrageLetzterMonat = 0;
+    	
     	
     }
     
     @ScheduledMethod(start=1, interval=21, priority=ScheduleParameters.LAST_PRIORITY)
     public void finalizeMonth() {
-        //pay wages
+        //pay wages, build buffer for bad times, pay profits
     	if( gehalt * typeBPartners.size() <= liquiditaet) {
     		// genug geld um arbeiter zu bezahlen
     		liquiditaet -= gehalt * typeBPartners.size();
@@ -109,21 +128,29 @@ public class Unternehmen {
     		}
     		//try to do a liquiditaet buffer
     		double expectedliquidityBuffer = HI * gehalt * typeBPartners.size();
-    		double profit = Math.max(0, liquiditaet - expectedliquidityBuffer);
-    		
+    		profit = Math.max(0, liquiditaet - expectedliquidityBuffer);
+    		liquiditaet -= profit;
     		SessionManager.allocateProfits(profit);
     	}else {
     		//firm does not have enough money to pay wages - wage cuts are needed
     		double kriesenGehalt = liquiditaet / typeBPartners.size();
     		for(Haushalt h : typeBPartners) {
+    			liquiditaet -= kriesenGehalt;
     			h.empfangeGehalt(kriesenGehalt);
     		}
     	}
     	
     	
-    	//build buffer for bad times
+    	//setze die Variable durchgehende Einstellungsmonate
+    	if(einstellungDiesenMonat) {
+    		durchgehendeEinstellungsmonate++;
+    	}else {
+    		//keine Einstellung diesen Monat
+    		durchgehendeEinstellungsmonate = 0;
+    	}
     	
-    	//pay profits
+    	einstellungDiesenMonat = false;
+    	
     }
     
     
@@ -131,7 +158,11 @@ public class Unternehmen {
     	if (typeBPartners == null || typeBPartners.isEmpty()) return null;
 
     	int index = RandomHelper.nextIntFromTo(0, typeBPartners.size() - 1);
-        return typeBPartners.remove(index);
+    	typeBPartners.get(index).notifyFired();
+    	Haushalt h = typeBPartners.remove(index);
+    	typeBPartners.removeIf(Objects::isNull);
+
+        return h;
 		
 	}
 
@@ -164,17 +195,10 @@ public class Unternehmen {
     
     //===============================Getter/Setter===========================================
     
-    
-    public void addTypeAPartner(Unternehmen f) {
-        typeAPartners.add(f);
-    }
+
 
     public void addTypeBPartner(Haushalt f) {
         typeBPartners.add(f);
-    }
-
-    public List<Unternehmen> getTypeAPartners() {
-        return typeAPartners;
     }
 
     public List<Haushalt> getTypeBPartners() {
@@ -191,8 +215,8 @@ public class Unternehmen {
 	}
 	
 	public boolean getOpenPosition() {
-		//TODO figure out some logic for hiring people
-		return true;
+		//TODO figure out some logic for hiring people Done
+		return openPositions > 0;
 	}
 	
 	public double getGehalt() {
@@ -202,11 +226,20 @@ public class Unternehmen {
 	public double getInventar() {
 		return inventar;
 	}
+	
+	public int getOpenPositions() {
+		return openPositions;
+	}
 
 
 	public void empfangeBewerbungAufArbeit(Haushalt haushalt) {
-		// TODO Auto-generated method stub 
-		
+		if(openPositions > 0) {
+			//if you have open positions hire worker
+			openPositions = openPositions - 1;
+			addTypeBPartner(haushalt);
+			haushalt.notifyHired(this);
+			einstellungDiesenMonat = true;
+		}
 	}
 
 
@@ -232,9 +265,26 @@ public class Unternehmen {
 	    inventar -= quantitySold;
 	    //TODO make one variable
 	    liquiditaet += quantitySold * preis; 
+	    nachfrageLetzterMonat += quantitySold;
+	    
 	    return quantitySold;
 	}
+	
+	public double getNachfrageLetzterMonat() {
+		return nachfrageLetzterMonat;
+	}
+	public double getLiquiditaet() {
+		return liquiditaet;
+	}
 
+	/**
+	 * notifies the Unternehmen that a household is quitting
+	 * @param haushalt haushalt that is quitting
+	 */
+	public void notifyQuitting(Haushalt haushalt) {
+		typeBPartners.remove(haushalt);
+		typeBPartners.removeIf(Objects::isNull);
+	}
 	
     
     
