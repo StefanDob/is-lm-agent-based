@@ -137,4 +137,14 @@ public class DataCollecter {
 	    return summe / haushalte.size();
 	}
 	
+	public static double getDurchschnittlicherReservationsGehalt() {
+		List<Haushalt> haushalte = SessionManager.getHausHaltListe();
+		double summe = 0;
+	    for (Haushalt h : haushalte) {
+	    	summe += h.getReservationsGehalt();
+	    }
+	    
+	    return summe / haushalte.size();
+	}
+	
 }

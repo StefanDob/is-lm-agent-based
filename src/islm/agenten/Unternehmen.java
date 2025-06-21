@@ -23,13 +23,13 @@ public class Unternehmen {
     
     private boolean einstellungDiesenMonat = false;
     
-    private static final int GAMMA = 3; //anzahl an aufeinanderfolgenden monaten in denen konsequent leute eingestellt wurden
+    private static final int GAMMA = 24; //anzahl an aufeinanderfolgenden monaten in denen konsequent leute eingestellt wurden
     private static final double DELTA = 0.019; //boundries of distribution to increase wage
     private static final double UPPER_PHI_INVENTORIES = 1.0;
     private static final double LOWER_PHI_INVENTORIES = 0.25;
     
     private static final double UPPER_PHI_PRICE = 1.15;
-    private static final double LOWER_PHI_PRICE = 0.025;
+    private static final double LOWER_PHI_PRICE = 1.025;
     private static final double LAMBDA = 3;
     
     private static final double THETA = 0.75; //propability of changing price if inventory is not in bounds
@@ -60,7 +60,7 @@ public class Unternehmen {
     
     
     
-    @ScheduledMethod(start = 1, interval = 21, priority = ScheduleParameters.FIRST_PRIORITY)
+    @ScheduledMethod(start = 1, interval = 21, priority = -3)
     public void beginningOfMonth() {
     	//fire people if you have to do so because of last periods
     	if(workerNeedsToBeFired) {
@@ -68,8 +68,7 @@ public class Unternehmen {
     		workerNeedsToBeFired = false;
     		
     	}
-    	
-    	//adjust wages based on months with hiring
+    	/*adjust wages based on months with hiring (only if you still want to hire)
     	if (durchgehendeEinstellungsmonate == 0) {
     		//im letzen monat wurde niemand eingestellt
             adjustWage(true); // increase wage
@@ -77,13 +76,18 @@ public class Unternehmen {
             adjustWage(false); // decrease wage
         }
     	
+    	*/
+    	
+    	if (durchgehendeEinstellungsmonate >= GAMMA ) {
+            adjustWage(false); // decrease wage
+        }
     	//adjust number of employees and price
     	
     	double upperBarrierInventory = UPPER_PHI_INVENTORIES * nachfrageLetzterMonat;
     	double lowerBarrierInventory = LOWER_PHI_INVENTORIES * nachfrageLetzterMonat;
     	
     	
-    	marginaleKosten = gehalt / LAMBDA;
+    	marginaleKosten = gehalt * typeBPartners.size();;
     	double upperBarrierPrice = UPPER_PHI_PRICE * marginaleKosten;
     	double lowerBarrierPrice = LOWER_PHI_PRICE * marginaleKosten;
     	
@@ -91,7 +95,7 @@ public class Unternehmen {
     	if(inventar > upperBarrierInventory) {
     		//fire randomly chosen worker in next month
     		workerNeedsToBeFired = true;
-    		if(preis > upperBarrierPrice) {
+    		if(preis > lowerBarrierPrice) {
     			//decrease price with probability Thita
     			if (RandomHelper.nextDouble() < THETA) {
     				adjustPrice(false); //decrease prce
@@ -101,12 +105,19 @@ public class Unternehmen {
     		//create new position to raise production
     		openPositions++;
     		//addTypeBPartner(new Haushalt()); //TODO fix this to not add a new household but to create opportunity for households to apply
-    		if(preis > upperBarrierPrice) {
+    		if(preis < upperBarrierPrice) {
     			//increase price with probability Thita
     			if (RandomHelper.nextDouble() < THETA) {
     				adjustPrice(true); //increase price
     			}
     		}
+    		
+    		if (durchgehendeEinstellungsmonate == 0) {
+        		//im letzen monat wurde niemand eingestellt
+                adjustWage(true); // increase wage
+            }
+    		
+    		
     		
     	}
     	
@@ -117,7 +128,7 @@ public class Unternehmen {
     	
     }
     
-    @ScheduledMethod(start=1, interval=21, priority=ScheduleParameters.LAST_PRIORITY)
+    @ScheduledMethod(start=1, interval=21, priority= 1)
     public void finalizeMonth() {
         //pay wages, build buffer for bad times, pay profits
     	if( gehalt * typeBPartners.size() <= liquiditaet) {
@@ -138,6 +149,11 @@ public class Unternehmen {
     			liquiditaet -= kriesenGehalt;
     			h.empfangeGehalt(kriesenGehalt);
     		}
+    		liquiditaet = 0; // after distributing all liquidity - to make sure no stupid results
+    	}
+    	
+    	if(liquiditaet < 0 ) {
+    		System.out.print("liquiditaet is negative");
     	}
     	
     	

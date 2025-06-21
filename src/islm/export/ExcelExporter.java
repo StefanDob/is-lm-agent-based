@@ -51,6 +51,7 @@ public class ExcelExporter {
                 DataCollecter.getEmployedCount(),
                 DataCollecter.beschäftigteLeute(),
                 DataCollecter.getOpenPositions(),
+                DataCollecter.getDurchschnittlicherReservationsGehalt(),
                 DataCollecter.getDurchschnittsgehalt(),
                 DataCollecter.getDurchSchnittspreis(),
                 DataCollecter.getDurchSchnittsinventar(),
@@ -84,7 +85,7 @@ public class ExcelExporter {
         Sheet monthlySheet = workbook.createSheet("Monthly Data");
         Row monthlyHeader = monthlySheet.createRow(0);
         String[] headers = {
-                "Tick", "EmployedHouseholds", "BeschäftigteLeute", "OpenPositions",
+                "Tick", "EmployedHouseholds", "BeschäftigteLeute", "OpenPositions", "ReservationsGehalt",
                 "Durchschnittsgehalt", "Durchschnittspreis", "Durchschnittsinventar",
                 "GesamtNachfrage", "GeplanterMonatlicherKonsum",
                 "UnternehmenMoney", "HaushalteMoney", "AllMoney"
@@ -100,14 +101,15 @@ public class ExcelExporter {
             row.createCell(1).setCellValue(m.employedCount);
             row.createCell(2).setCellValue(m.beschäftigteLeute);
             row.createCell(3).setCellValue(m.openPositions);
-            row.createCell(4).setCellValue(m.durchschnittsgehalt);
-            row.createCell(5).setCellValue(m.durchschnittspreis);
-            row.createCell(6).setCellValue(m.durchschnittsinventar);
-            row.createCell(7).setCellValue(m.gesamtNachfrage);
-            row.createCell(8).setCellValue(m.geplanterMonatlicherKonsum);
-            row.createCell(9).setCellValue(m.allUnternehmenMoney);
-            row.createCell(10).setCellValue(m.allHouseholdMoney);
-            row.createCell(11).setCellValue(m.allMoney);
+            row.createCell(4).setCellValue(m.reservationsGehalt);
+            row.createCell(5).setCellValue(m.durchschnittsgehalt);
+            row.createCell(6).setCellValue(m.durchschnittspreis);
+            row.createCell(7).setCellValue(m.durchschnittsinventar);
+            row.createCell(8).setCellValue(m.gesamtNachfrage);
+            row.createCell(9).setCellValue(m.geplanterMonatlicherKonsum);
+            row.createCell(10).setCellValue(m.allUnternehmenMoney);
+            row.createCell(11).setCellValue(m.allHouseholdMoney);
+            row.createCell(12).setCellValue(m.allMoney);
         }
 
         try (FileOutputStream fos = new FileOutputStream(outputPath)) {
@@ -135,6 +137,7 @@ public class ExcelExporter {
         final int employedCount;
         final int beschäftigteLeute;
         final int openPositions;
+        final double reservationsGehalt;
         final double durchschnittsgehalt;
         final double durchschnittspreis;
         final double durchschnittsinventar;
@@ -144,7 +147,7 @@ public class ExcelExporter {
         final double allHouseholdMoney;
         final double allMoney;
 
-        MonthlyData(double tick, int employedCount, int beschäftigteLeute, int openPositions,
+        MonthlyData(double tick, int employedCount, int beschäftigteLeute, int openPositions, double reservationsGehalt,
                     double durchschnittsgehalt, double durchschnittspreis, double durchschnittsinventar,
                     double gesamtNachfrage, double geplanterMonatlicherKonsum,
                     double allUnternehmenMoney, double allHouseholdMoney, double allMoney) {
@@ -152,6 +155,7 @@ public class ExcelExporter {
             this.employedCount = employedCount;
             this.beschäftigteLeute = beschäftigteLeute;
             this.openPositions = openPositions;
+            this.reservationsGehalt = reservationsGehalt;
             this.durchschnittsgehalt = durchschnittsgehalt;
             this.durchschnittspreis = durchschnittspreis;
             this.durchschnittsinventar = durchschnittsinventar;

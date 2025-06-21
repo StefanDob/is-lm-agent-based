@@ -34,7 +34,7 @@ public class DataPlotter {
         List<Double> values = unmetDemand.asList();
 
         // Create histogram data (probability density)
-        Histogram histogram = new Histogram(values, 300); // 30 bins
+        Histogram histogram = new Histogram(values, 30); // 30 bins
 
         // Build chart
         XYChart chart = new XYChartBuilder()
@@ -44,6 +44,8 @@ public class DataPlotter {
                 .xAxisTitle("Unmet Demand Ratio")
                 .yAxisTitle("Density")
                 .build();
+        
+        chart.getStyler().setXAxisDecimalPattern("0.00");
 
         chart.addSeries("UnmetDemandRatio", histogram.getxAxisData(), histogram.getyAxisData());
 

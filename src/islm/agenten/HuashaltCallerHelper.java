@@ -13,7 +13,7 @@ import repast.simphony.engine.schedule.ScheduledMethod;
 public class HuashaltCallerHelper {
 	//this method is called here instead of in the household classes in order to make sure that the houselholds are picked in 
     //random order to seek new trading connections
-    @ScheduledMethod(start = 1, interval = 21, priority = 0)
+    @ScheduledMethod(start = 1, interval = 21, priority = -2)
     public void beginningOfMonth() {
     	List<Haushalt> shuffledHouseholds = new ArrayList<>(SessionManager.getHausHaltListe());
     	Collections.shuffle(shuffledHouseholds);
@@ -25,7 +25,7 @@ public class HuashaltCallerHelper {
     
   //this method is called here instead of in the household classes in order to make sure that the houselholds are picked in 
     //random order to execute their daily demands
-    @ScheduledMethod(start = 1, interval = 1, priority = ScheduleParameters.FIRST_PRIORITY)
+    @ScheduledMethod(start = 1, interval = 1, priority = -1)
     public void dayStep() {
     	List<Haushalt> shuffledHouseholds = new ArrayList<>(SessionManager.getHausHaltListe());
     	Collections.shuffle(shuffledHouseholds);

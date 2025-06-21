@@ -101,7 +101,7 @@ public class ISLMBuilder implements ContextBuilder<Object> {
     
     private List<Unternehmen> createListOfRandomCompanies() {
 		List<Unternehmen> returnList = new ArrayList<>();
-		for(int i = 0; i < 8; i++) {
+		for(int i = 0; i < 7; i++) {
 			returnList.add(SessionManager.getRandomUnternehmen());
 		}
 		return returnList;

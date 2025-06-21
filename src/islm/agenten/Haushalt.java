@@ -69,11 +69,15 @@ public class Haushalt {
 			
 			if(quantityBought * u.getPreis() < plannedConsumptionSpending) {
 				//register a demand constraint
-				unmetDemandRatio =  ( quantityBought * u.getPreis() / plannedConsumptionSpending);
+				unmetDemandRatio =  1 - ( quantityBought * u.getPreis() / plannedConsumptionSpending);
 				lastPeriodsDemandConstraints.add(new DemandConstraint(u, plannedConsumptionSpending - quantityBought * u.getPreis()));
 			}
 			
 			liquiditaet -= quantityBought * u.getPreis();
+			
+			if(liquiditaet < 0) { //due to rounding etc.
+				liquiditaet = 0;
+			}
 			
 			satisfiedConsumption += quantityBought;
 		}
@@ -152,7 +156,7 @@ public class Haushalt {
     	lastPeriodsDemandConstraints.clear();
     }
     
-    @ScheduledMethod(start=1, interval=21, priority=ScheduleParameters.LAST_PRIORITY)
+    @ScheduledMethod(start=1, interval=21, priority= 1)
     public void finalizeMonth() {
     	//if you did not have work this month reduce reservation wage by 10 %
     	if(arbeitGeber == null) {
@@ -292,6 +296,10 @@ public class Haushalt {
 	
 	public double getPerMonthKonsumption() {
 		return perMonthConsumption;
+	}
+	
+	public double getReservationsGehalt() {
+		return reservationsGehalt;
 	}
 
 
