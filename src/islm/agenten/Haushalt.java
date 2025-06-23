@@ -69,7 +69,6 @@ public class Haushalt {
 			
 			if(quantityBought * u.getPreis() < plannedConsumptionSpending) {
 				//register a demand constraint
-				unmetDemandRatio =  1 - ( quantityBought * u.getPreis() / plannedConsumptionSpending);
 				lastPeriodsDemandConstraints.add(new DemandConstraint(u, plannedConsumptionSpending - quantityBought * u.getPreis()));
 			}
 			
@@ -82,6 +81,12 @@ public class Haushalt {
 			satisfiedConsumption += quantityBought;
 		}
 		
+		if (plannedDailyDemandInGoods > 0) {
+		    unmetDemandRatio = Math.max(0, 1 - (satisfiedConsumption / plannedDailyDemandInGoods));
+		    
+		} else {
+		    unmetDemandRatio = 0.0;
+		}
 		
 		
 		
