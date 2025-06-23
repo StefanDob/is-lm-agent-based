@@ -17,11 +17,10 @@ public class Unternehmen {
     private double nachfrageLetzterMonat = 0; 
     private double marginaleKosten = 0;
     
-    private int durchgehendeEinstellungsmonate = 0; //anzahl an monaten in denen durchgehend leute eingestellt wurden
+    private int consecutiveMonthsAllJobsFilled = 0; //anzahl an monaten in denen durchgehend alle Positionen gefüllt wurden
     
     private int openPositions = 0;
     
-    private boolean einstellungDiesenMonat = false;
     
     private static final int GAMMA = 24; //anzahl an aufeinanderfolgenden monaten in denen konsequent leute eingestellt wurden
     private static final double DELTA = 0.019; //boundries of distribution to increase wage
@@ -66,21 +65,18 @@ public class Unternehmen {
     	if(workerNeedsToBeFired) {
     		fireRandomWorker();
     		workerNeedsToBeFired = false;
-    		
     	}
-    	/*adjust wages based on months with hiring (only if you still want to hire)
-    	if (durchgehendeEinstellungsmonate == 0) {
-    		//im letzen monat wurde niemand eingestellt
+    	
+    	if (consecutiveMonthsAllJobsFilled == 0) {
+    		//im letzen monat wurde niemand eingestellt obwohl es offene stellen gibt
             adjustWage(true); // increase wage
-        } else if (durchgehendeEinstellungsmonate >= GAMMA ) {
+        } else if (consecutiveMonthsAllJobsFilled >= GAMMA ) {
             adjustWage(false); // decrease wage
         }
     	
-    	*/
     	
-    	if (durchgehendeEinstellungsmonate >= GAMMA ) {
-            adjustWage(false); // decrease wage
-        }
+    	
+    	
     	//adjust number of employees and price
     	
     	double upperBarrierInventory = UPPER_PHI_INVENTORIES * nachfrageLetzterMonat;
@@ -111,14 +107,6 @@ public class Unternehmen {
     				adjustPrice(true); //increase price
     			}
     		}
-    		
-    		if (durchgehendeEinstellungsmonate == 0) {
-        		//im letzen monat wurde niemand eingestellt
-                adjustWage(true); // increase wage
-            }
-    		
-    		
-    		
     	}
     	
     	//reset Nachfrage letzter Monat to 0 after new Month has started
@@ -158,14 +146,14 @@ public class Unternehmen {
     	
     	
     	//setze die Variable durchgehende Einstellungsmonate
-    	if(einstellungDiesenMonat) {
-    		durchgehendeEinstellungsmonate++;
-    	}else {
+    	if(openPositions == 0) {
+    		consecutiveMonthsAllJobsFilled++;
+    	}else{
     		//keine Einstellung diesen Monat
-    		durchgehendeEinstellungsmonate = 0;
+    		consecutiveMonthsAllJobsFilled = 0;
     	}
     	
-    	einstellungDiesenMonat = false;
+    	
     	
     }
     
@@ -254,7 +242,6 @@ public class Unternehmen {
 			openPositions = openPositions - 1;
 			addTypeBPartner(haushalt);
 			haushalt.notifyHired(this);
-			einstellungDiesenMonat = true;
 		}
 	}
 
@@ -270,7 +257,8 @@ public class Unternehmen {
 	 */
 	public double attemptPurchaseForAmount(double plannedConsumptionSpending) {
 	    double wantedInventory = plannedConsumptionSpending / preis;
-
+	    nachfrageLetzterMonat += wantedInventory;
+	    
 	    double quantitySold;
 	    if (wantedInventory <= inventar) {
 	        quantitySold = wantedInventory;
@@ -281,7 +269,7 @@ public class Unternehmen {
 	    inventar -= quantitySold;
 	    //TODO make one variable
 	    liquiditaet += quantitySold * preis; 
-	    nachfrageLetzterMonat += quantitySold;
+	    
 	    
 	    return quantitySold;
 	}
