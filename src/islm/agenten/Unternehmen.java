@@ -83,7 +83,7 @@ public class Unternehmen {
     	double lowerBarrierInventory = LOWER_PHI_INVENTORIES * nachfrageLetzterMonat;
     	
     	
-    	marginaleKosten = gehalt * typeBPartners.size();;
+    	marginaleKosten = gehalt / (LAMBDA * 21.0);
     	double upperBarrierPrice = UPPER_PHI_PRICE * marginaleKosten;
     	double lowerBarrierPrice = LOWER_PHI_PRICE * marginaleKosten;
     	
