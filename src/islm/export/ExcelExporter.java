@@ -45,9 +45,11 @@ public class ExcelExporter {
     
     public void collectMonthlyData() {
         double tick = RunEnvironment.getInstance().getCurrentSchedule().getTickCount();
+        int year = (int) (0 + (tick / 12) / 21);
 
         monthlyDataList.add(new MonthlyData(
                 tick,
+                year,
                 DataCollecter.getEmployedCount(),
                 DataCollecter.beschäftigteLeute(),
                 DataCollecter.getOpenPositions(),
@@ -85,7 +87,7 @@ public class ExcelExporter {
         Sheet monthlySheet = workbook.createSheet("Monthly Data");
         Row monthlyHeader = monthlySheet.createRow(0);
         String[] headers = {
-                "Tick", "EmployedHouseholds", "BeschäftigteLeute", "OpenPositions", "ReservationsGehalt",
+                "Tick", "Jahr", "EmployedHouseholds", "BeschäftigteLeute", "OpenPositions", "ReservationsGehalt",
                 "Durchschnittsgehalt", "Durchschnittspreis", "Durchschnittsinventar",
                 "GesamtNachfrage", "GeplanterMonatlicherKonsum",
                 "UnternehmenMoney", "HaushalteMoney", "AllMoney"
@@ -98,18 +100,19 @@ public class ExcelExporter {
         for (MonthlyData m : monthlyDataList) {
             Row row = monthlySheet.createRow(monthlyRowIndex++);
             row.createCell(0).setCellValue(m.tick);
-            row.createCell(1).setCellValue(m.employedCount);
-            row.createCell(2).setCellValue(m.beschäftigteLeute);
-            row.createCell(3).setCellValue(m.openPositions);
-            row.createCell(4).setCellValue(m.reservationsGehalt);
-            row.createCell(5).setCellValue(m.durchschnittsgehalt);
-            row.createCell(6).setCellValue(m.durchschnittspreis);
-            row.createCell(7).setCellValue(m.durchschnittsinventar);
-            row.createCell(8).setCellValue(m.gesamtNachfrage);
-            row.createCell(9).setCellValue(m.geplanterMonatlicherKonsum);
-            row.createCell(10).setCellValue(m.allUnternehmenMoney);
-            row.createCell(11).setCellValue(m.allHouseholdMoney);
-            row.createCell(12).setCellValue(m.allMoney);
+            row.createCell(1).setCellValue(m.jahr);
+            row.createCell(2).setCellValue(m.employedCount);
+            row.createCell(3).setCellValue(m.beschäftigteLeute);
+            row.createCell(4).setCellValue(m.openPositions);
+            row.createCell(5).setCellValue(m.reservationsGehalt);
+            row.createCell(6).setCellValue(m.durchschnittsgehalt);
+            row.createCell(7).setCellValue(m.durchschnittspreis);
+            row.createCell(8).setCellValue(m.durchschnittsinventar);
+            row.createCell(9).setCellValue(m.gesamtNachfrage);
+            row.createCell(10).setCellValue(m.geplanterMonatlicherKonsum);
+            row.createCell(11).setCellValue(m.allUnternehmenMoney);
+            row.createCell(12).setCellValue(m.allHouseholdMoney);
+            row.createCell(13).setCellValue(m.allMoney);
         }
 
         try (FileOutputStream fos = new FileOutputStream(outputPath)) {
@@ -134,6 +137,7 @@ public class ExcelExporter {
 
     private static class MonthlyData {
         final double tick;
+        final int jahr;
         final int employedCount;
         final int beschäftigteLeute;
         final int openPositions;
@@ -147,11 +151,12 @@ public class ExcelExporter {
         final double allHouseholdMoney;
         final double allMoney;
 
-        MonthlyData(double tick, int employedCount, int beschäftigteLeute, int openPositions, double reservationsGehalt,
+        MonthlyData(double tick, int jahr, int employedCount, int beschäftigteLeute, int openPositions, double reservationsGehalt,
                     double durchschnittsgehalt, double durchschnittspreis, double durchschnittsinventar,
                     double gesamtNachfrage, double geplanterMonatlicherKonsum,
                     double allUnternehmenMoney, double allHouseholdMoney, double allMoney) {
             this.tick = tick;
+            this.jahr = jahr;
             this.employedCount = employedCount;
             this.beschäftigteLeute = beschäftigteLeute;
             this.openPositions = openPositions;

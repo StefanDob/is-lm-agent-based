@@ -138,6 +138,7 @@ public class Unternehmen {
     			h.empfangeGehalt(kriesenGehalt);
     		}
     		liquiditaet = 0; // after distributing all liquidity - to make sure no stupid results
+    		gehalt = kriesenGehalt;
     	}
     	
     	if(liquiditaet < 0 ) {
