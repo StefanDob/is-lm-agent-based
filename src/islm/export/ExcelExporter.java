@@ -1,5 +1,6 @@
 package islm.export;
 
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xddf.usermodel.chart.XDDFChartData;
 import org.apache.poi.xddf.usermodel.chart.XDDFDataSource;
@@ -11,6 +12,8 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.engine.schedule.ScheduledMethod;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -28,7 +31,6 @@ public class ExcelExporter {
     public ExcelExporter() {
         try {
             Files.createDirectories(Paths.get("output"));
-            Files.deleteIfExists(Paths.get(outputPath));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -70,7 +72,27 @@ public class ExcelExporter {
     public void writeToExcel() {
         Workbook workbook = new XSSFWorkbook();
 
-        // Daily sheet
+        File file = new File(outputPath);
+        if (file.exists()) {
+            // Bestehendes Workbook laden
+            try (FileInputStream fis = new FileInputStream(file)) {
+                workbook = WorkbookFactory.create(fis);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return;
+            } catch (InvalidFormatException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        } 
+
+     // Alte Sheets entfernen (falls vorhanden)
+        removeSheetIfExists(workbook, "Daily Data");
+        removeSheetIfExists(workbook, "Monthly Data");
+        removeSheetIfExists(workbook, "PDF Histogram");
+        
+
+        // Neue Daily-Sheet erstellen
         Sheet dailySheet = workbook.createSheet("Daily Data");
         Row dailyHeader = dailySheet.createRow(0);
         dailyHeader.createCell(0).setCellValue("Tick");
@@ -83,11 +105,11 @@ public class ExcelExporter {
             row.createCell(1).setCellValue(d.unmetDemandRatio);
         }
 
-        // Monthly sheet
+        // Neue Monthly-Sheet erstellen
         Sheet monthlySheet = workbook.createSheet("Monthly Data");
         Row monthlyHeader = monthlySheet.createRow(0);
         String[] headers = {
-                "Tick", "Jahr", "EmployedHouseholds", "BeschäftigteLeute", "OpenPositions", "ReservationsGehalt",
+                "Tick", "Jahr", "Beschäftigung", " ", "OpenPositions", "ReservationsGehalt",
                 "Durchschnittsgehalt", "Durchschnittspreis", "Durchschnittsinventar",
                 "GesamtNachfrage", "GeplanterMonatlicherKonsum",
                 "UnternehmenMoney", "HaushalteMoney", "AllMoney"
@@ -102,7 +124,6 @@ public class ExcelExporter {
             row.createCell(0).setCellValue(m.tick);
             row.createCell(1).setCellValue(m.jahr);
             row.createCell(2).setCellValue(m.employedCount);
-            row.createCell(3).setCellValue(m.beschäftigteLeute);
             row.createCell(4).setCellValue(m.openPositions);
             row.createCell(5).setCellValue(m.reservationsGehalt);
             row.createCell(6).setCellValue(m.durchschnittsgehalt);
@@ -114,15 +135,72 @@ public class ExcelExporter {
             row.createCell(12).setCellValue(m.allHouseholdMoney);
             row.createCell(13).setCellValue(m.allMoney);
         }
+        
+        //Häufigkeitsverteilung für unmet demand:
+        int bins = 10;
+        int[] histogram = new int[bins + 1]; // +1 for the zero-bin
+
+        // Häufigkeitsverteilung berechnen
+        for (DailyData d : dailyDataList) {
+            double value = d.unmetDemandRatio;
+
+            if (value == 0.0) {
+                histogram[0]++; // Bin 0: exact zeros
+            } else {
+                int binIndex = (int) Math.ceil(value * bins); // z.B. value = 0.27 → bin 3
+                binIndex = Math.min(binIndex, bins); // Sicherheitsgrenze
+                histogram[binIndex]++;
+            }
+        }
+
+        // Gesamtanzahl aller Beobachtungen
+        int total = dailyDataList.size();
+
+        // Neue Sheet für Histogramm
+        Sheet histSheet = workbook.createSheet("PDF Histogram");
+        Row header = histSheet.createRow(0);
+        header.createCell(0).setCellValue("Bin");
+        header.createCell(1).setCellValue("Frequency");
+        header.createCell(2).setCellValue("Probability");
+
+        // Bin 0: exakt 0
+        Row zeroRow = histSheet.createRow(1);
+        zeroRow.createCell(0).setCellValue("= 0");
+        zeroRow.createCell(1).setCellValue(histogram[0]);
+        zeroRow.createCell(2).setCellValue((double) histogram[0] / total);
+
+        // Bins > 0
+        for (int i = 1; i <= bins; i++) {
+            Row row = histSheet.createRow(i + 1);
+            double lowerBound = (i - 1) / (double) bins;
+            double upperBound = i / (double) bins;
+            String label = String.format("(%.2f – %.2f]", lowerBound, upperBound);
+
+            row.createCell(0).setCellValue(label);
+            row.createCell(1).setCellValue(histogram[i]);
+            row.createCell(2).setCellValue((double) histogram[i] / total);
+        }
+        
+        //schreiben
 
         try (FileOutputStream fos = new FileOutputStream(outputPath)) {
             workbook.write(fos);
-            System.out.println("Data successfully written to " + outputPath + " at tick " +
+            System.out.println("Data updated in " + outputPath + " at tick " +
                     RunEnvironment.getInstance().getCurrentSchedule().getTickCount());
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+    
+    private void removeSheetIfExists(Workbook workbook, String sheetName) {
+        Sheet sheet = workbook.getSheet(sheetName);
+        if (sheet != null) {
+            int index = workbook.getSheetIndex(sheet);
+            workbook.removeSheetAt(index);
+        }
+    }
+
+
 
     private static class DailyData {
         final double tick;
