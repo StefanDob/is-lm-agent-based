@@ -15,6 +15,7 @@ import repast.simphony.engine.schedule.ScheduleParameters;
 import repast.simphony.engine.schedule.ScheduledMethod;
 
 public class ISLMBuilder implements ContextBuilder<Object> {
+	public static final int TOTAL_SIMULATION_TICKS = 7000 * 21;
 
     @Override
     public Context<Object> build(Context<Object> context) {
@@ -45,7 +46,7 @@ public class ISLMBuilder implements ContextBuilder<Object> {
         
         
         // 7000 months * 21 daysPerMonth 
-        RunEnvironment.getInstance().endAt(7000 * 21);
+        RunEnvironment.getInstance().endAt(TOTAL_SIMULATION_TICKS);
         
         
         

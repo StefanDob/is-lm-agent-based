@@ -1,5 +1,6 @@
 package islm.export;
 
+import islm.ISLMBuilder;
 import repast.simphony.engine.schedule.ScheduledMethod;
 
 public class ExportManager {
@@ -16,19 +17,19 @@ public class ExportManager {
 	}
 	
 	
-	@ScheduledMethod(start = 147000, interval = 1, priority = 3)
+	@ScheduledMethod(start = ISLMBuilder.TOTAL_SIMULATION_TICKS, interval = 1, priority = 3)
     public void exportAtTheEnd() {
 		dataPlotter.exportAtTheEnd();
 		excelExporter.writeToExcel();
 	}
 	
-	@ScheduledMethod(start = 1, interval = 1, priority = 3)
+	@ScheduledMethod(start = 6000, interval = 1, priority = 3)
     public void dailyData() {
 		excelExporter.collectDailyData();
 		csvExporter.exportDailyData();
 	}
 	
-	 @ScheduledMethod(start = 1, interval = 21, priority = 3)
+	 @ScheduledMethod(start = 6000, interval = 21, priority = 3)
 	 public void monthlyData() {
 		 excelExporter.collectMonthlyData();
 		 csvExporter.exportMonthlyData();
