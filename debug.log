@@ -866,3 +866,130 @@ Caused by: java.lang.ClassNotFoundException: islm.ISLMBuilder
 	at repast.simphony.scenario.ScenarioFileLoader.load(ScenarioFileLoader.java:70) ~[?:?]
 	at repast.simphony.scenario.ScenarioLoader.load(ScenarioLoader.java:199) ~[?:?]
 	... 21 more
+ERROR [AWT-EventQueue-0] 2025-09-11T09:52:26,775 TimeSeriesComponentControllerAction - Error while creating Charts. Chart DataSet 'Open Positions' not found
+java.lang.NullPointerException: null
+	at repast.simphony.chart2.engine.TimeSeriesComponentControllerAction.batchInitialize(TimeSeriesComponentControllerAction.java:71) ~[?:?]
+	at repast.simphony.engine.controller.DefaultController$1.visit(DefaultController.java:192) ~[?:?]
+	at repast.simphony.engine.controller.DefaultController$1.visit(DefaultController.java:1) ~[?:?]
+	at repast.simphony.util.collections.NaryTree.preOrderTraverals(NaryTree.java:292) ~[?:?]
+	at repast.simphony.util.collections.NaryTree.preOrderTraverals(NaryTree.java:295) ~[?:?]
+	at repast.simphony.util.collections.NaryTree.preOrderTraverals(NaryTree.java:295) ~[?:?]
+	at repast.simphony.util.collections.NaryTree.preOrderTraversal(NaryTree.java:288) ~[?:?]
+	at repast.simphony.engine.controller.DefaultController.batchInitialize(DefaultController.java:190) ~[?:?]
+	at repast.simphony.engine.controller.DefaultController.batchInitialize(DefaultController.java:349) ~[?:?]
+	at repast.simphony.ui.RSApplication.initSim(RSApplication.java:169) ~[?:?]
+	at repast.simphony.ui.RSApplication.start(RSApplication.java:203) ~[?:?]
+	at repast.simphony.ui.action.StartRun.actionPerformed(StartRun.java:17) ~[?:?]
+	at javax.swing.AbstractButton.fireActionPerformed(AbstractButton.java:1972) ~[?:?]
+	at javax.swing.AbstractButton$Handler.actionPerformed(AbstractButton.java:2313) ~[?:?]
+	at javax.swing.DefaultButtonModel.fireActionPerformed(DefaultButtonModel.java:405) ~[?:?]
+	at javax.swing.DefaultButtonModel.setPressed(DefaultButtonModel.java:262) ~[?:?]
+	at javax.swing.plaf.basic.BasicButtonListener.mouseReleased(BasicButtonListener.java:279) ~[?:?]
+	at java.awt.AWTEventMulticaster.mouseReleased(AWTEventMulticaster.java:297) ~[?:?]
+	at java.awt.Component.processMouseEvent(Component.java:6626) ~[?:?]
+	at javax.swing.JComponent.processMouseEvent(JComponent.java:3389) ~[?:?]
+	at java.awt.Component.processEvent(Component.java:6391) ~[?:?]
+	at java.awt.Container.processEvent(Container.java:2266) ~[?:?]
+	at java.awt.Component.dispatchEventImpl(Component.java:5001) ~[?:?]
+	at java.awt.Container.dispatchEventImpl(Container.java:2324) ~[?:?]
+	at java.awt.Component.dispatchEvent(Component.java:4833) ~[?:?]
+	at java.awt.LightweightDispatcher.retargetMouseEvent(Container.java:4948) ~[?:?]
+	at java.awt.LightweightDispatcher.processMouseEvent(Container.java:4575) ~[?:?]
+	at java.awt.LightweightDispatcher.dispatchEvent(Container.java:4516) ~[?:?]
+	at java.awt.Container.dispatchEventImpl(Container.java:2310) ~[?:?]
+	at java.awt.Window.dispatchEventImpl(Window.java:2780) ~[?:?]
+	at java.awt.Component.dispatchEvent(Component.java:4833) ~[?:?]
+	at java.awt.EventQueue.dispatchEventImpl(EventQueue.java:775) ~[?:?]
+	at java.awt.EventQueue$4.run(EventQueue.java:720) ~[?:?]
+	at java.awt.EventQueue$4.run(EventQueue.java:714) ~[?:?]
+	at java.security.AccessController.doPrivileged(AccessController.java:399) ~[?:?]
+	at java.security.ProtectionDomain$JavaSecurityAccessImpl.doIntersectionPrivilege(ProtectionDomain.java:86) ~[?:?]
+	at java.security.ProtectionDomain$JavaSecurityAccessImpl.doIntersectionPrivilege(ProtectionDomain.java:97) ~[?:?]
+	at java.awt.EventQueue$5.run(EventQueue.java:747) ~[?:?]
+	at java.awt.EventQueue$5.run(EventQueue.java:745) ~[?:?]
+	at java.security.AccessController.doPrivileged(AccessController.java:399) ~[?:?]
+	at java.security.ProtectionDomain$JavaSecurityAccessImpl.doIntersectionPrivilege(ProtectionDomain.java:86) ~[?:?]
+	at java.awt.EventQueue.dispatchEvent(EventQueue.java:744) ~[?:?]
+	at java.awt.EventDispatchThread.pumpOneEventForFilters(EventDispatchThread.java:203) ~[?:?]
+	at java.awt.EventDispatchThread.pumpEventsForFilter(EventDispatchThread.java:124) ~[?:?]
+	at java.awt.EventDispatchThread.pumpEventsForHierarchy(EventDispatchThread.java:113) ~[?:?]
+	at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:109) ~[?:?]
+	at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:101) ~[?:?]
+	at java.awt.EventDispatchThread.run(EventDispatchThread.java:90) ~[?:?]
+INFO  [AWT-EventQueue-0] 2025-09-11T10:37:48,021 BatchConfigMediator - Writing batch run config file to: C:\Stefan\Universitat\Masterthesis\is-lm-agent-based\output\config.props
+INFO  [AWT-EventQueue-0] 2025-09-11T10:37:48,321 BatchConfigMediator - Unrolling batch parameter file:
+	C:\Stefan\Universitat\Masterthesis\is-lm-agent-based\batch\batch_params.xml to
+	C:\Users\Stefan\AppData\Local\Temp\unrolledParamFile.txt
+INFO  [SwingWorker-pool-2-thread-1] 2025-09-11T10:38:23,686 LocalSession - 
+	Copying locally C:\Users\Stefan\AppData\Local\Temp\Stefan_localhost11600096271773005426.zip to 
+C:\Users\Stefan\AppData\Local\Temp\simphony_model_1757579898585 ...
+INFO  [SwingWorker-pool-2-thread-1] 2025-09-11T10:38:23,772 LocalSession - Copying Finished.
+INFO  [SwingWorker-pool-2-thread-1] 2025-09-11T10:38:23,774 SessionsDriver - Initialization Time: 0,0865
+INFO  [SwingWorker-pool-2-thread-1] 2025-09-11T10:38:23,774 LocalSession - Unzipping model C:\Users\Stefan\AppData\Local\Temp\simphony_model_1757579898585\Stefan_localhost11600096271773005426.zip
+INFO  [SwingWorker-pool-2-thread-1] 2025-09-11T10:38:24,651 LocalSession - Running model on localhost ...
+INFO  [Thread-0] 2025-09-11T10:39:14,336 LocalSession - ERROR [main] 10:39:14,321 InstanceRunner - Error while running model
+INFO  [Thread-0] 2025-09-11T10:39:14,336 LocalSession - java.lang.ArrayIndexOutOfBoundsException: Index 1 out of bounds for length 1
+INFO  [Thread-0] 2025-09-11T10:39:14,336 LocalSession - 	at repast.simphony.batch.parameter.ParameterLineParser.parse(ParameterLineParser.java:55) ~[repast.simphony.distributed.batch.jar:?]
+INFO  [Thread-0] 2025-09-11T10:39:14,337 LocalSession - 	at repast.simphony.batch.InstanceRunner.run(InstanceRunner.java:191) ~[repast.simphony.distributed.batch.jar:?]
+INFO  [Thread-0] 2025-09-11T10:39:14,337 LocalSession - 	at repast.simphony.batch.InstanceRunner.main(InstanceRunner.java:215) ~[repast.simphony.distributed.batch.jar:?]
+INFO  [pool-3-thread-1] 2025-09-11T10:39:24,671 LocalDonePoller - Polled C:\Users\Stefan\AppData\Local\Temp\simphony_model_1757579898585 for DONE:  yes
+INFO  [SwingWorker-pool-2-thread-1] 2025-09-11T10:39:24,672 SessionsDriver - Run Time: 1,0150
+INFO  [SwingWorker-pool-2-thread-1] 2025-09-11T10:39:24,700 LocalSession - Finding output on localhost in C:\Users\Stefan\AppData\Local\Temp\simphony_model_1757579898585
+INFO  [SwingWorker-pool-2-thread-1] 2025-09-11T10:39:24,713 SessionsDriver - Aggregating output into C:/Stefan/Universitat/Masterthesis/is-lm-agent-based/output
+INFO  [SwingWorker-pool-2-thread-1] 2025-09-11T10:39:24,713 SessionsDriver - Get Output Time: 0,0007
+INFO  [SwingWorker-pool-2-thread-1] 2025-09-11T10:39:24,714 SessionsDriver - Finished. Elapsed Time: 1,1024
+INFO  [AWT-EventQueue-0] 2025-09-11T10:40:36,028 BatchConfigMediator - Writing batch run config file to: C:\Stefan\Universitat\Masterthesis\is-lm-agent-based\output\config.props
+INFO  [AWT-EventQueue-0] 2025-09-11T10:40:36,075 BatchConfigMediator - Unrolling batch parameter file:
+	C:\Stefan\Universitat\Masterthesis\is-lm-agent-based\batch\batch_params.xml to
+	C:\Users\Stefan\AppData\Local\Temp\unrolledParamFile.txt
+INFO  [SwingWorker-pool-2-thread-1] 2025-09-11T10:40:55,676 LocalSession - 
+	Copying locally C:\Users\Stefan\AppData\Local\Temp\Stefan_localhost16368717116846140728.zip to 
+C:\Users\Stefan\AppData\Local\Temp\simphony_model_1757580050229 ...
+INFO  [SwingWorker-pool-2-thread-1] 2025-09-11T10:40:55,773 LocalSession - Copying Finished.
+INFO  [SwingWorker-pool-2-thread-1] 2025-09-11T10:40:55,775 SessionsDriver - Initialization Time: 0,0924
+INFO  [SwingWorker-pool-2-thread-1] 2025-09-11T10:40:55,775 LocalSession - Unzipping model C:\Users\Stefan\AppData\Local\Temp\simphony_model_1757580050229\Stefan_localhost16368717116846140728.zip
+INFO  [SwingWorker-pool-2-thread-1] 2025-09-11T10:40:57,017 LocalSession - Running model on localhost ...
+INFO  [AWT-EventQueue-0] 2025-09-11T10:42:30,079 BatchConfigMediator - Writing batch run config file to: C:\Stefan\Universitat\Masterthesis\is-lm-agent-based\output\config.props
+INFO  [AWT-EventQueue-0] 2025-09-11T10:42:30,126 BatchConfigMediator - Unrolling batch parameter file:
+	C:\Stefan\Universitat\Masterthesis\is-lm-agent-based\batch\batch_params.xml to
+	C:\Users\Stefan\AppData\Local\Temp\unrolledParamFile.txt
+INFO  [SwingWorker-pool-2-thread-1] 2025-09-11T10:42:48,998 LocalSession - 
+	Copying locally C:\Users\Stefan\AppData\Local\Temp\Stefan_localhost6564335669787237980.zip to 
+C:\Users\Stefan\AppData\Local\Temp\simphony_model_1757580163906 ...
+INFO  [SwingWorker-pool-2-thread-1] 2025-09-11T10:42:49,092 LocalSession - Copying Finished.
+INFO  [SwingWorker-pool-2-thread-1] 2025-09-11T10:42:49,093 SessionsDriver - Initialization Time: 0,0864
+INFO  [SwingWorker-pool-2-thread-1] 2025-09-11T10:42:49,094 LocalSession - Unzipping model C:\Users\Stefan\AppData\Local\Temp\simphony_model_1757580163906\Stefan_localhost6564335669787237980.zip
+INFO  [SwingWorker-pool-2-thread-1] 2025-09-11T10:42:49,981 LocalSession - Running model on localhost ...
+INFO  [Thread-0] 2025-09-11T10:43:34,981 LocalSession - ERROR [main] 10:43:34,965 InstanceRunner - Error while running model
+INFO  [Thread-0] 2025-09-11T10:43:34,981 LocalSession - java.lang.ArrayIndexOutOfBoundsException: Index 1 out of bounds for length 1
+INFO  [Thread-0] 2025-09-11T10:43:34,982 LocalSession - 	at repast.simphony.batch.parameter.ParameterLineParser.parse(ParameterLineParser.java:55) ~[repast.simphony.distributed.batch.jar:?]
+INFO  [Thread-0] 2025-09-11T10:43:34,982 LocalSession - 	at repast.simphony.batch.InstanceRunner.run(InstanceRunner.java:191) ~[repast.simphony.distributed.batch.jar:?]
+INFO  [Thread-0] 2025-09-11T10:43:34,982 LocalSession - 	at repast.simphony.batch.InstanceRunner.main(InstanceRunner.java:215) ~[repast.simphony.distributed.batch.jar:?]
+INFO  [pool-3-thread-1] 2025-09-11T10:43:49,989 LocalDonePoller - Polled C:\Users\Stefan\AppData\Local\Temp\simphony_model_1757580163906 for DONE:  yes
+INFO  [SwingWorker-pool-2-thread-1] 2025-09-11T10:43:49,991 SessionsDriver - Run Time: 1,0150
+INFO  [SwingWorker-pool-2-thread-1] 2025-09-11T10:43:50,016 LocalSession - Finding output on localhost in C:\Users\Stefan\AppData\Local\Temp\simphony_model_1757580163906
+INFO  [SwingWorker-pool-2-thread-1] 2025-09-11T10:43:50,022 SessionsDriver - Aggregating output into C:/Stefan/Universitat/Masterthesis/is-lm-agent-based/output
+INFO  [SwingWorker-pool-2-thread-1] 2025-09-11T10:43:50,022 SessionsDriver - Get Output Time: 0,0005
+INFO  [SwingWorker-pool-2-thread-1] 2025-09-11T10:43:50,022 SessionsDriver - Finished. Elapsed Time: 1,1022
+INFO  [AWT-EventQueue-0] 2025-09-11T10:46:03,735 BatchConfigMediator - Writing batch run config file to: C:\Stefan\Universitat\Masterthesis\is-lm-agent-based\output\config.props
+INFO  [AWT-EventQueue-0] 2025-09-11T10:46:03,785 BatchConfigMediator - Unrolling batch parameter file:
+	C:\Stefan\Universitat\Masterthesis\is-lm-agent-based\batch\batch_params.xml to
+	C:\Users\Stefan\AppData\Local\Temp\unrolledParamFile.txt
+INFO  [SwingWorker-pool-2-thread-1] 2025-09-11T10:46:22,182 LocalSession - 
+	Copying locally C:\Users\Stefan\AppData\Local\Temp\Stefan_localhost14147852935896127743.zip to 
+C:\Users\Stefan\AppData\Local\Temp\simphony_model_1757580377497 ...
+INFO  [SwingWorker-pool-2-thread-1] 2025-09-11T10:46:22,263 LocalSession - Copying Finished.
+INFO  [SwingWorker-pool-2-thread-1] 2025-09-11T10:46:22,265 SessionsDriver - Initialization Time: 0,0794
+INFO  [SwingWorker-pool-2-thread-1] 2025-09-11T10:46:22,266 LocalSession - Unzipping model C:\Users\Stefan\AppData\Local\Temp\simphony_model_1757580377497\Stefan_localhost14147852935896127743.zip
+INFO  [SwingWorker-pool-2-thread-1] 2025-09-11T10:46:23,134 LocalSession - Running model on localhost ...
+INFO  [Thread-0] 2025-09-11T10:47:04,718 LocalSession - ERROR [main] 10:47:04,705 InstanceRunner - Error while running model
+INFO  [Thread-0] 2025-09-11T10:47:04,718 LocalSession - java.lang.ArrayIndexOutOfBoundsException: Index 1 out of bounds for length 1
+INFO  [Thread-0] 2025-09-11T10:47:04,718 LocalSession - 	at repast.simphony.batch.parameter.ParameterLineParser.parse(ParameterLineParser.java:55) ~[repast.simphony.distributed.batch.jar:?]
+INFO  [Thread-0] 2025-09-11T10:47:04,719 LocalSession - 	at repast.simphony.batch.InstanceRunner.run(InstanceRunner.java:191) ~[repast.simphony.distributed.batch.jar:?]
+INFO  [Thread-0] 2025-09-11T10:47:04,719 LocalSession - 	at repast.simphony.batch.InstanceRunner.main(InstanceRunner.java:215) ~[repast.simphony.distributed.batch.jar:?]
+INFO  [pool-3-thread-1] 2025-09-11T10:47:23,147 LocalDonePoller - Polled C:\Users\Stefan\AppData\Local\Temp\simphony_model_1757580377497 for DONE:  yes
+INFO  [SwingWorker-pool-2-thread-1] 2025-09-11T10:47:23,150 SessionsDriver - Run Time: 1,0147
+INFO  [SwingWorker-pool-2-thread-1] 2025-09-11T10:47:23,171 LocalSession - Finding output on localhost in C:\Users\Stefan\AppData\Local\Temp\simphony_model_1757580377497
+INFO  [SwingWorker-pool-2-thread-1] 2025-09-11T10:47:23,177 SessionsDriver - Aggregating output into C:/Stefan/Universitat/Masterthesis/is-lm-agent-based/output
+INFO  [SwingWorker-pool-2-thread-1] 2025-09-11T10:47:23,177 SessionsDriver - Get Output Time: 0,0005
+INFO  [SwingWorker-pool-2-thread-1] 2025-09-11T10:47:23,178 SessionsDriver - Finished. Elapsed Time: 1,0950
