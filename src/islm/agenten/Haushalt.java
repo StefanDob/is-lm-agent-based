@@ -156,7 +156,12 @@ public class Haushalt {
     	double ph = computeAverageCostOfAllConsumptionGoods();
     	
     	perMonthConsumption = Math.min(Math.pow(liquiditaet / ph, ALPHA), liquiditaet / ph);
-    	
+    	if(perMonthConsumption > 1000000) {
+    		System.out.println("Problem Per month consumption: " + perMonthConsumption);
+    		System.out.println("liquiditaet: " + liquiditaet);
+    		System.out.println("ALPHA: " + ALPHA);
+    		System.out.println("ph: " + ph);
+    	}
     	// as the new months jobs all have completed reset the demand constraints
     	lastPeriodsDemandConstraints.clear();
     }

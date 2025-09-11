@@ -26,8 +26,10 @@ public class Unternehmen {
     private static final double DELTA = 0.019; //boundries of distribution to increase wage
     private static final double UPPER_PHI_INVENTORIES = 1.0;
     private static final double LOWER_PHI_INVENTORIES = 0.25;
+    private static final double MINIMUM_WAGE = 1.0;
+    private static final double MINIMUM_PRICE = 1.0;
     
-    private static final double UPPER_PHI_PRICE = 1.15;
+    private static final double UPPER_PHI_PRICE = 100;
     private static final double LOWER_PHI_PRICE = 1.025;
     private static final double LAMBDA = 3;
     
@@ -88,6 +90,7 @@ public class Unternehmen {
     	double lowerBarrierPrice = LOWER_PHI_PRICE * marginaleKosten;
     	
     	
+    	
     	if(inventar > upperBarrierInventory) {
     		//fire randomly chosen worker in next month
     		workerNeedsToBeFired = true;
@@ -100,10 +103,15 @@ public class Unternehmen {
     	}else if(inventar <= lowerBarrierInventory) {
     		//create new position to raise production
     		openPositions++;
+    		System.out.println("marginaleKosten: " + marginaleKosten);
+        	System.out.println("upperBarrierPrice: " + upperBarrierPrice);
+        	System.out.println("preis: " + preis);
     		//addTypeBPartner(new Haushalt()); //TODO fix this to not add a new household but to create opportunity for households to apply
     		if(preis < upperBarrierPrice) {
+    			System.out.print("GEts here 2");
     			//increase price with probability Thita
     			if (RandomHelper.nextDouble() < THETA) {
+    				System.out.print("GEts here 3");
     				adjustPrice(true); //increase price
     			}
     		}
@@ -176,12 +184,20 @@ public class Unternehmen {
      * decrease wage if increase is false else increase it
      */
     public void adjustWage(boolean increase) {
-        double mu = RandomHelper.nextDouble() * DELTA;  // μᵢ ∈ [0, δ)
+        double mu = RandomHelper.nextDouble() * DELTA; // μᵢ ∈ [0, δ)
+        double newWage;
 
         if (increase) {
-            gehalt *= (1.0 + mu);
+            newWage = gehalt * (1.0 + mu);
         } else {
-        	gehalt *= (1.0 - mu);
+            newWage = gehalt * (1.0 - mu);
+        }
+
+        // Ensure the new wage does not fall below the minimum wage
+        if (newWage < MINIMUM_WAGE) {
+            gehalt = MINIMUM_WAGE;
+        } else {
+            gehalt = newWage;
         }
     }
 
@@ -190,11 +206,19 @@ public class Unternehmen {
      */
     public void adjustPrice(boolean increase) {
         double vu = RandomHelper.nextDouble() * theta;  // vᵢ ∈ [0, ϑ)
+        double newPrice;
 
         if (increase) {
-            preis *= (1.0 + vu);
+            newPrice = preis * (1.0 + vu);
         } else {
-            preis *= (1.0 - vu);
+            newPrice = preis * (1.0 - vu);
+        }
+
+        // Ensure the new price doesn't drop below the minimum price
+        if (newPrice < MINIMUM_PRICE) {
+            preis = MINIMUM_PRICE;
+        } else {
+            preis = newPrice;
         }
     }
     
