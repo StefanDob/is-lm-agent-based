@@ -7,11 +7,11 @@
   <scheduleParams>
     <start>1.0</start>
     <interval>21.0</interval>
-    <priority>Infinity</priority>
-    <pType>FIRST</pType>
+    <priority>-Infinity</priority>
+    <pType>LAST</pType>
     <duration>-1.0</duration>
     <frequency>REPEAT</frequency>
-    <hashCode>685865580</hashCode>
+    <hashCode>1743502974</hashCode>
   </scheduleParams>
   <atEnd>false</atEnd>
   <methodDataSources class="linked-hash-map">

@@ -31,7 +31,7 @@ public class Unternehmen {
     
     private static final double UPPER_PHI_PRICE = 100;
     private static final double LOWER_PHI_PRICE = 1.025;
-    private static final double LAMBDA = 3;
+    private static final double LAMBDA = 3.0;
     
     private static final double THETA = 0.75; //propability of changing price if inventory is not in bounds
     private static final double theta = 0.02;
@@ -101,17 +101,13 @@ public class Unternehmen {
     			}
     		}
     	}else if(inventar <= lowerBarrierInventory) {
+    		System.out.println(lowerBarrierInventory);
     		//create new position to raise production
     		openPositions++;
-    		System.out.println("marginaleKosten: " + marginaleKosten);
-        	System.out.println("upperBarrierPrice: " + upperBarrierPrice);
-        	System.out.println("preis: " + preis);
     		//addTypeBPartner(new Haushalt()); //TODO fix this to not add a new household but to create opportunity for households to apply
     		if(preis < upperBarrierPrice) {
-    			System.out.print("GEts here 2");
     			//increase price with probability Thita
     			if (RandomHelper.nextDouble() < THETA) {
-    				System.out.print("GEts here 3");
     				adjustPrice(true); //increase price
     			}
     		}

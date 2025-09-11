@@ -88,7 +88,31 @@ public class Haushalt {
 		    unmetDemandRatio = 0.0;
 		}
 		
+		//if you are jobless look for jobs daily //TODO
 		
+		if(arbeitGeber == null) {
+    		//if you are unemployed check BETA firms, to find new employment
+    		for(int i = 1; i <= BETA; i++) {
+    			Unternehmen u = SessionManager.getRandomUnternehmen();
+    			if(u.getOpenPosition() && u.getGehalt() >= reservationsGehalt) {
+    				acceptPositionAt(u);
+    				if(arbeitGeber != null) break;
+    			}
+    		}
+			//if it does not find anything it just takes any job:
+			if(arbeitGeber == null) {
+				for(Unternehmen u : SessionManager.getUnternehmenListe()) {
+					if(u.getOpenPosition() ) {
+						acceptPositionAt(u);
+						if(arbeitGeber != null) break;
+					}
+			}
+	    		
+			}
+			if(arbeitGeber == null) {
+				System.out.println("Arbeitgeber is still sero");
+			}
+    	}
 		
 	}
 	
@@ -133,9 +157,22 @@ public class Haushalt {
     			Unternehmen u = SessionManager.getRandomUnternehmen();
     			if(u.getOpenPosition() && u.getGehalt() >= reservationsGehalt) {
     				acceptPositionAt(u);
-    				break;
+    				if(arbeitGeber != null) break;
     			}
     		}
+			//if it does not find anything it just takes any job:
+			if(arbeitGeber == null) {
+				for(Unternehmen u : SessionManager.getUnternehmenListe()) {
+					if(u.getOpenPosition() ) {
+						acceptPositionAt(u);
+						if(arbeitGeber != null) break;
+					}
+			}
+	    		
+			}
+			if(arbeitGeber == null) {
+				System.out.println("Arbeitgeber is still sero");
+			}
     	}else if(aktuellesGehalt >= reservationsGehalt) {
     		//Employee is happily working however he might still check with probability pi (not the circle thing) for better jobs
     		if(RandomHelper.nextDouble() < PI) {
@@ -156,12 +193,8 @@ public class Haushalt {
     	double ph = computeAverageCostOfAllConsumptionGoods();
     	
     	perMonthConsumption = Math.min(Math.pow(liquiditaet / ph, ALPHA), liquiditaet / ph);
-    	if(perMonthConsumption > 1000000) {
-    		System.out.println("Problem Per month consumption: " + perMonthConsumption);
-    		System.out.println("liquiditaet: " + liquiditaet);
-    		System.out.println("ALPHA: " + ALPHA);
-    		System.out.println("ph: " + ph);
-    	}
+    	
+    	
     	// as the new months jobs all have completed reset the demand constraints
     	lastPeriodsDemandConstraints.clear();
     }
