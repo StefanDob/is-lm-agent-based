@@ -90,29 +90,17 @@ public class Haushalt {
 		
 		//if you are jobless look for jobs daily //TODO
 		
-		if(arbeitGeber == null) {
-    		//if you are unemployed check BETA firms, to find new employment
-    		for(int i = 1; i <= BETA; i++) {
-    			Unternehmen u = SessionManager.getRandomUnternehmen();
-    			if(u.getOpenPosition() && u.getGehalt() >= reservationsGehalt) {
-    				acceptPositionAt(u);
-    				if(arbeitGeber != null) break;
-    			}
-    		}
-			//if it does not find anything it just takes any job:
-			if(arbeitGeber == null) {
-				for(Unternehmen u : SessionManager.getUnternehmenListe()) {
-					if(u.getOpenPosition() ) {
-						acceptPositionAt(u);
-						if(arbeitGeber != null) break;
-					}
-			}
-	    		
-			}
-			if(arbeitGeber == null) {
-				System.out.println("Arbeitgeber is still sero");
-			}
-    	}
+				if(arbeitGeber == null) {
+		    		//if you are unemployed check BETA firms, to find new employment
+		    		for(int i = 1; i <= BETA; i++) {
+		    			Unternehmen u = SessionManager.getRandomUnternehmen();
+		    			if(u.getOpenPosition() && u.getGehalt() >= reservationsGehalt) {
+		    				acceptPositionAt(u);
+		    				if(arbeitGeber != null) break;
+		    			}
+		    		}
+					
+		    	}
 		
 	}
 	
