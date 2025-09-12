@@ -103,10 +103,7 @@ public class Unternehmen {
     	}else if(inventar <= lowerBarrierInventory) {
     		//create new position to raise production
     		openPositions++;
-    		System.out.println("marginaleKosten: " + marginaleKosten);
-        	System.out.println("upperBarrierPrice: " + upperBarrierPrice);
-        	System.out.println("preis: " + preis);
-    		//addTypeBPartner(new Haushalt()); //TODO fix this to not add a new household but to create opportunity for households to apply
+    		
     		if(preis < upperBarrierPrice) {
     			System.out.print("GEts here 2");
     			//increase price with probability Thita
@@ -146,7 +143,7 @@ public class Unternehmen {
     			h.empfangeGehalt(kriesenGehalt);
     		}
     		liquiditaet = 0; // after distributing all liquidity - to make sure no stupid results
-    		gehalt = kriesenGehalt;
+    		//gehalt = kriesenGehalt;
     	}
     	
     	if(liquiditaet < 0 ) {
@@ -244,7 +241,6 @@ public class Unternehmen {
 	}
 	
 	public boolean getOpenPosition() {
-		//TODO figure out some logic for hiring people Done
 		return openPositions > 0;
 	}
 	
@@ -292,7 +288,7 @@ public class Unternehmen {
 	    }
 
 	    inventar -= quantitySold;
-	    //TODO make one variable
+	    
 	    liquiditaet += quantitySold * preis; 
 	    
 	    
