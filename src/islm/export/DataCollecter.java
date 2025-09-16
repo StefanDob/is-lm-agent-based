@@ -1,6 +1,7 @@
 package islm.export;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import islm.SessionManager;
 import islm.agenten.Haushalt;
@@ -145,6 +146,18 @@ public class DataCollecter {
 	    }
 	    
 	    return summe / haushalte.size();
+	}
+	
+	public static double getVermögensGini(){
+		List<Double> liquidList = SessionManager.getHausHaltListe().stream().map(Haushalt::getLiquiditaet).collect(Collectors.toList());
+		
+		return InequalityUtils.gini(liquidList);
+	}
+	
+	public static double getEinkommensGini(){
+		List<Double> liquidList = SessionManager.getHausHaltListe().stream().map(Haushalt::getAktuellesGehalt).collect(Collectors.toList());
+		
+		return InequalityUtils.gini(liquidList);
 	}
 	
 }

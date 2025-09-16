@@ -333,6 +333,9 @@ public class Haushalt {
 		return reservationsGehalt;
 	}
 
+	public double getAktuellesGehalt() {
+		return aktuellesGehalt;
+	}
 
 
 	public void notifyHired(Unternehmen unternehmen) {

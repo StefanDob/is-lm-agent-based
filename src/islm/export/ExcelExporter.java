@@ -63,7 +63,9 @@ public class ExcelExporter {
                 DataCollecter.getGeplanterMonatlicherKonsum(),
                 DataCollecter.getAllUnternehmenMoney(),
                 DataCollecter.getAllHouseholdMoney(),
-                DataCollecter.getAllMoney()
+                DataCollecter.getAllMoney(),
+                DataCollecter.getVermögensGini(),
+                DataCollecter.getEinkommensGini()
         ));
     }
 
@@ -112,7 +114,7 @@ public class ExcelExporter {
                 "Tick", "Jahr", "Beschäftigung", " ", "OpenPositions", "ReservationsGehalt",
                 "Durchschnittsgehalt", "Durchschnittspreis", "Durchschnittsinventar",
                 "GesamtNachfrage", "GeplanterMonatlicherKonsum",
-                "UnternehmenMoney", "HaushalteMoney", "AllMoney"
+                "UnternehmenMoney", "HaushalteMoney", "AllMoney", "Vermögens Gini", "Einkommens Gini"
         };
         for (int i = 0; i < headers.length; i++) {
             monthlyHeader.createCell(i).setCellValue(headers[i]);
@@ -134,6 +136,8 @@ public class ExcelExporter {
             row.createCell(11).setCellValue(m.allUnternehmenMoney);
             row.createCell(12).setCellValue(m.allHouseholdMoney);
             row.createCell(13).setCellValue(m.allMoney);
+            row.createCell(14).setCellValue(m.vermögensGini);
+            row.createCell(15).setCellValue(m.einkommensGini);
         }
         
         //Häufigkeitsverteilung für unmet demand:
@@ -228,11 +232,13 @@ public class ExcelExporter {
         final double allUnternehmenMoney;
         final double allHouseholdMoney;
         final double allMoney;
+        final double vermögensGini;
+        final double einkommensGini;
 
         MonthlyData(double tick, int jahr, int employedCount, int beschäftigteLeute, int openPositions, double reservationsGehalt,
                     double durchschnittsgehalt, double durchschnittspreis, double durchschnittsinventar,
                     double gesamtNachfrage, double geplanterMonatlicherKonsum,
-                    double allUnternehmenMoney, double allHouseholdMoney, double allMoney) {
+                    double allUnternehmenMoney, double allHouseholdMoney, double allMoney,double vermögensGini, double einkommensGini ) {
             this.tick = tick;
             this.jahr = jahr;
             this.employedCount = employedCount;
@@ -247,6 +253,8 @@ public class ExcelExporter {
             this.allUnternehmenMoney = allUnternehmenMoney;
             this.allHouseholdMoney = allHouseholdMoney;
             this.allMoney = allMoney;
+            this.vermögensGini = vermögensGini;
+            this.einkommensGini = einkommensGini;
         }
     }
 }
