@@ -30,6 +30,7 @@ public class Haushalt {
 	
 	private double unmetDemandRatio = 1;
 	
+	private double aktuellesEinkommen = 0.0;
 	private static final double PSI_PRICE = 0.25;
 	private static final double PSI_QUANT = 0.25;
 	private static final double XI = 0.01;
@@ -197,6 +198,11 @@ public class Haushalt {
     	
     }
     
+    @ScheduledMethod(start=1, interval=21, priority= 4)
+    public void clearTrackers() {
+    	aktuellesEinkommen = 0;
+    }
+    
     
     
     /**
@@ -293,6 +299,7 @@ public class Haushalt {
     }
 
 	public void empfangeGehalt(double gehalt) {
+		aktuellesEinkommen += gehalt;
 		liquiditaet += gehalt;
 		
 		//sollte das Gehalt größer sein, als das Reservationsgehalt wird das reservationsgehalt hochgesetzt
@@ -302,6 +309,7 @@ public class Haushalt {
 	}
 	
 	public void empfangeProfit(double profit) {
+		aktuellesEinkommen += profit;
 		liquiditaet += profit;
 		
 	}
@@ -336,7 +344,11 @@ public class Haushalt {
 	public double getAktuellesGehalt() {
 		return aktuellesGehalt;
 	}
-
+	
+	public double getAktuellesEinkommen() {
+		return aktuellesEinkommen;
+	}
+	
 
 	public void notifyHired(Unternehmen unternehmen) {
 		//first notify the old Arbeitgeber that you got hired if necessary and that you thereby Quit

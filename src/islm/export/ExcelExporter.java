@@ -65,7 +65,8 @@ public class ExcelExporter {
                 DataCollecter.getAllHouseholdMoney(),
                 DataCollecter.getAllMoney(),
                 DataCollecter.getVermögensGini(),
-                DataCollecter.getEinkommensGini()
+                DataCollecter.getGehaltsGini(),
+                DataCollecter.getEinkommenGini()
         ));
     }
 
@@ -111,10 +112,10 @@ public class ExcelExporter {
         Sheet monthlySheet = workbook.createSheet("Monthly Data");
         Row monthlyHeader = monthlySheet.createRow(0);
         String[] headers = {
-                "Tick", "Jahr", "Beschäftigung", " ", "OpenPositions", "ReservationsGehalt",
+                "Tick", "Jahr", "Beschäftigung", "Offene Stellen", "Arbeitslose", "ReservationsGehalt",
                 "Durchschnittsgehalt", "Durchschnittspreis", "Durchschnittsinventar",
                 "GesamtNachfrage", "GeplanterMonatlicherKonsum",
-                "UnternehmenMoney", "HaushalteMoney", "AllMoney", "Vermögens Gini", "Einkommens Gini"
+                "UnternehmenMoney", "HaushalteMoney", "AllMoney", "Vermögens Gini", "Gehalts Gini", "Einkommen Gini"
         };
         for (int i = 0; i < headers.length; i++) {
             monthlyHeader.createCell(i).setCellValue(headers[i]);
@@ -126,7 +127,8 @@ public class ExcelExporter {
             row.createCell(0).setCellValue(m.tick);
             row.createCell(1).setCellValue(m.jahr);
             row.createCell(2).setCellValue(m.employedCount);
-            row.createCell(4).setCellValue(m.openPositions);
+            row.createCell(3).setCellValue(m.openPositions);
+            row.createCell(4).setCellValue(1000 - m.employedCount);
             row.createCell(5).setCellValue(m.reservationsGehalt);
             row.createCell(6).setCellValue(m.durchschnittsgehalt);
             row.createCell(7).setCellValue(m.durchschnittspreis);
@@ -137,7 +139,8 @@ public class ExcelExporter {
             row.createCell(12).setCellValue(m.allHouseholdMoney);
             row.createCell(13).setCellValue(m.allMoney);
             row.createCell(14).setCellValue(m.vermögensGini);
-            row.createCell(15).setCellValue(m.einkommensGini);
+            row.createCell(15).setCellValue(m.gehaltsGini);
+            row.createCell(16).setCellValue(m.einkommenGini);
         }
         
         //Häufigkeitsverteilung für unmet demand:
@@ -233,12 +236,14 @@ public class ExcelExporter {
         final double allHouseholdMoney;
         final double allMoney;
         final double vermögensGini;
-        final double einkommensGini;
+        final double gehaltsGini;
+        final double einkommenGini;
 
         MonthlyData(double tick, int jahr, int employedCount, int beschäftigteLeute, int openPositions, double reservationsGehalt,
                     double durchschnittsgehalt, double durchschnittspreis, double durchschnittsinventar,
                     double gesamtNachfrage, double geplanterMonatlicherKonsum,
-                    double allUnternehmenMoney, double allHouseholdMoney, double allMoney,double vermögensGini, double einkommensGini ) {
+                    double allUnternehmenMoney, double allHouseholdMoney, double allMoney,double vermögensGini, double gehaltsGini,
+                    double einkommenGini) {
             this.tick = tick;
             this.jahr = jahr;
             this.employedCount = employedCount;
@@ -254,7 +259,8 @@ public class ExcelExporter {
             this.allHouseholdMoney = allHouseholdMoney;
             this.allMoney = allMoney;
             this.vermögensGini = vermögensGini;
-            this.einkommensGini = einkommensGini;
+            this.gehaltsGini = gehaltsGini;
+            this.einkommenGini = einkommenGini;
         }
     }
 }

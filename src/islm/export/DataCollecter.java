@@ -154,10 +154,17 @@ public class DataCollecter {
 		return InequalityUtils.gini(liquidList);
 	}
 	
-	public static double getEinkommensGini(){
+	public static double getGehaltsGini(){
 		List<Double> liquidList = SessionManager.getHausHaltListe().stream().map(Haushalt::getAktuellesGehalt).collect(Collectors.toList());
 		
 		return InequalityUtils.gini(liquidList);
+	}
+
+	public static double getEinkommenGini() {
+		List<Double> liquidList = SessionManager.getHausHaltListe().stream().map(Haushalt::getAktuellesEinkommen).collect(Collectors.toList());
+		
+		return InequalityUtils.gini(liquidList);
+		
 	}
 	
 }
