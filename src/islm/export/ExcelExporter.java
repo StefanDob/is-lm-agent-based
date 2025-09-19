@@ -114,10 +114,10 @@ public class ExcelExporter {
         Sheet monthlySheet = workbook.createSheet("Monthly Data");
         Row monthlyHeader = monthlySheet.createRow(0);
         String[] headers = {
-                "Tick", "Jahr", "Beschäftigung", "Offene Stellen", "Delta Preis", "ReservationsGehalt",
+                "Tick", "Jahr", "Beschäftigung", "Offene Stellen", "Arbeitslose", "ReservationsGehalt",
                 "Durchschnittsgehalt", "Durchschnittspreis", "Durchschnittsinventar",
                 "GesamtNachfrage", "GeplanterMonatlicherKonsum",
-                "UnternehmenMoney", "HaushalteMoney", "AllMoney", "Vermögens Gini", "Gehalts Gini", "Einkommen Gini", "Arbeitslose"
+                "UnternehmenMoney", "HaushalteMoney", "AllMoney", "Vermögens Gini", "Gehalts Gini", "Einkommen Gini", "Arbeitslose (Monatsdurchschnitt)"
         };
         for (int i = 0; i < headers.length; i++) {
             monthlyHeader.createCell(i).setCellValue(headers[i]);
@@ -130,7 +130,7 @@ public class ExcelExporter {
             row.createCell(1).setCellValue(m.jahr);
             row.createCell(2).setCellValue(m.employedCount);
             row.createCell(3).setCellValue(m.openPositions);
-            row.createCell(4).setCellValue(m.deltaPreis);
+            row.createCell(4).setCellValue(1000 - m.employedCount);
             row.createCell(5).setCellValue(m.reservationsGehalt);
             row.createCell(6).setCellValue(m.durchschnittsgehalt);
             row.createCell(7).setCellValue(m.durchschnittspreis);
