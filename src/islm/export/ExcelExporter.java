@@ -67,7 +67,7 @@ public class ExcelExporter {
                 DataCollecter.getVermögensGini(),
                 DataCollecter.getGehaltsGini(),
                 DataCollecter.getEinkommenGini(),
-                DataCollecter.getDeltaPrice(),
+                DataCollecter.getDeltaPriceMonat(),
                 DataCollecter.getDurchschnittsArbeitslosenMonat()
         ));
     }
