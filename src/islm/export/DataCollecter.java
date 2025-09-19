@@ -8,7 +8,7 @@ import islm.agenten.Haushalt;
 import islm.agenten.Unternehmen;
 
 public class DataCollecter {
-	
+	private static double preis0 = 0.0;
 	//this method returns all currently employed households
 		public static int getOpenPositions() {
 			int openPositions = 0;
@@ -166,5 +166,20 @@ public class DataCollecter {
 		return InequalityUtils.gini(liquidList);
 		
 	}
+	
+	//this method is only allowed to be called once per period
+	public static double getDeltaPrice() {
+		double preis1 = getDurchSchnittspreis();
+		double deltaPreis = (preis1 - preis0) / preis0;
+		preis0 = preis1;
+		return deltaPreis;
+		
+	}
+
+	public static double getDurchschnittsArbeitslosenMonat() {
+		return SessionManager.getUnemploymentTracker().getUnemployment().stream().mapToInt(Integer::intValue).average().orElse(0.0);
+	}
+	
+	
 	
 }

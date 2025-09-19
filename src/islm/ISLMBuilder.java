@@ -8,6 +8,7 @@ import islm.agenten.HuashaltCallerHelper;
 import islm.agenten.Unternehmen;
 import islm.export.CSVExporter;
 import islm.export.ExportManager;
+import islm.export.UnemploymentTracker;
 import repast.simphony.context.Context;
 import repast.simphony.dataLoader.ContextBuilder;
 import repast.simphony.engine.environment.RunEnvironment;
@@ -46,6 +47,11 @@ public class ISLMBuilder implements ContextBuilder<Object> {
        //Setup exporter
         ExportManager exportManager = new ExportManager();
         context.add(exportManager);
+        
+        //Setup Trackers
+        UnemploymentTracker unemploymentTracker = new UnemploymentTracker();
+        SessionManager.setUnemploymentTracker(unemploymentTracker);
+        context.add(unemploymentTracker);
         
         
         // 7000 months * 21 daysPerMonth 

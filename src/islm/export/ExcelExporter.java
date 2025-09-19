@@ -66,7 +66,9 @@ public class ExcelExporter {
                 DataCollecter.getAllMoney(),
                 DataCollecter.getVermögensGini(),
                 DataCollecter.getGehaltsGini(),
-                DataCollecter.getEinkommenGini()
+                DataCollecter.getEinkommenGini(),
+                DataCollecter.getDeltaPrice(),
+                DataCollecter.getDurchschnittsArbeitslosenMonat()
         ));
     }
 
@@ -112,10 +114,10 @@ public class ExcelExporter {
         Sheet monthlySheet = workbook.createSheet("Monthly Data");
         Row monthlyHeader = monthlySheet.createRow(0);
         String[] headers = {
-                "Tick", "Jahr", "Beschäftigung", "Offene Stellen", "Arbeitslose", "ReservationsGehalt",
+                "Tick", "Jahr", "Beschäftigung", "Offene Stellen", "Delta Preis", "ReservationsGehalt",
                 "Durchschnittsgehalt", "Durchschnittspreis", "Durchschnittsinventar",
                 "GesamtNachfrage", "GeplanterMonatlicherKonsum",
-                "UnternehmenMoney", "HaushalteMoney", "AllMoney", "Vermögens Gini", "Gehalts Gini", "Einkommen Gini"
+                "UnternehmenMoney", "HaushalteMoney", "AllMoney", "Vermögens Gini", "Gehalts Gini", "Einkommen Gini", "Arbeitslose"
         };
         for (int i = 0; i < headers.length; i++) {
             monthlyHeader.createCell(i).setCellValue(headers[i]);
@@ -128,7 +130,7 @@ public class ExcelExporter {
             row.createCell(1).setCellValue(m.jahr);
             row.createCell(2).setCellValue(m.employedCount);
             row.createCell(3).setCellValue(m.openPositions);
-            row.createCell(4).setCellValue(1000 - m.employedCount);
+            row.createCell(4).setCellValue(m.deltaPreis);
             row.createCell(5).setCellValue(m.reservationsGehalt);
             row.createCell(6).setCellValue(m.durchschnittsgehalt);
             row.createCell(7).setCellValue(m.durchschnittspreis);
@@ -141,6 +143,8 @@ public class ExcelExporter {
             row.createCell(14).setCellValue(m.vermögensGini);
             row.createCell(15).setCellValue(m.gehaltsGini);
             row.createCell(16).setCellValue(m.einkommenGini);
+            row.createCell(17).setCellValue(1000 - m.employedCount);
+            row.createCell(17).setCellValue(m.durchschnittArbeitslose);
         }
         
         //Häufigkeitsverteilung für unmet demand:
@@ -238,12 +242,13 @@ public class ExcelExporter {
         final double vermögensGini;
         final double gehaltsGini;
         final double einkommenGini;
-
+        final double deltaPreis;
+        final double durchschnittArbeitslose;
         MonthlyData(double tick, int jahr, int employedCount, int beschäftigteLeute, int openPositions, double reservationsGehalt,
                     double durchschnittsgehalt, double durchschnittspreis, double durchschnittsinventar,
                     double gesamtNachfrage, double geplanterMonatlicherKonsum,
                     double allUnternehmenMoney, double allHouseholdMoney, double allMoney,double vermögensGini, double gehaltsGini,
-                    double einkommenGini) {
+                    double einkommenGini, double deltaPreis, double durchschnittArbeitslose) {
             this.tick = tick;
             this.jahr = jahr;
             this.employedCount = employedCount;
@@ -261,6 +266,8 @@ public class ExcelExporter {
             this.vermögensGini = vermögensGini;
             this.gehaltsGini = gehaltsGini;
             this.einkommenGini = einkommenGini;
+            this.deltaPreis = deltaPreis;
+            this.durchschnittArbeitslose = durchschnittArbeitslose;
         }
     }
 }

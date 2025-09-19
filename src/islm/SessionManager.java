@@ -5,6 +5,7 @@ import java.util.List;
 
 import islm.agenten.Haushalt;
 import islm.agenten.Unternehmen;
+import islm.export.UnemploymentTracker;
 import repast.simphony.random.RandomHelper;
 
 
@@ -12,6 +13,7 @@ import repast.simphony.random.RandomHelper;
 public class SessionManager {
 	public static List<Unternehmen> unternehmenListe = new ArrayList<>();
 	public static List<Haushalt> hausHaltListe = new ArrayList<>();
+	private static UnemploymentTracker unemploymentTracker;
 	
 	
 	
@@ -82,6 +84,15 @@ public class SessionManager {
 	        double share = (h.getLiquiditaet() / totalLiquidity) * profit;
 	        h.empfangeProfit(share);
 	    }
+	}
+
+
+	public static void setUnemploymentTracker(UnemploymentTracker unemploymentTracker) {
+		SessionManager.unemploymentTracker = unemploymentTracker;
+	}
+	
+	public static UnemploymentTracker getUnemploymentTracker() {
+		return unemploymentTracker;
 	}
 
 	
