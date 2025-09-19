@@ -161,7 +161,7 @@ public class Haushalt {
     	lastPeriodsDemandConstraints.clear();
     }
     
-    @ScheduledMethod(start=1, interval=21, priority= 1)
+    @ScheduledMethod(start=1, interval=21, priority= -4)
     public void finalizeMonth() {
     	//if you did not have work this month reduce reservation wage by 10 %
     	if(arbeitGeber == null) {

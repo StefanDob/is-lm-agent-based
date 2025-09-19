@@ -116,7 +116,7 @@ public class Unternehmen {
     	
     }
     
-    @ScheduledMethod(start=1, interval=21, priority= 1)
+    @ScheduledMethod(start=1, interval=21, priority= -5)
     public void finalizeMonth() {
         //pay wages, build buffer for bad times, pay profits
     	if( gehalt * typeBPartners.size() <= liquiditaet) {

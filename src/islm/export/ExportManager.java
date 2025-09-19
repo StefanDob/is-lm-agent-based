@@ -23,13 +23,13 @@ public class ExportManager {
 		excelExporter.writeToExcel();
 	}
 	
-	@ScheduledMethod(start = 1000, interval = 1, priority = 3)
+	@ScheduledMethod(start = 987, interval = 1, priority = 3)
     public void dailyData() {
 		excelExporter.collectDailyData();
 		csvExporter.exportDailyData();
 	}
 	
-	 @ScheduledMethod(start = 1000, interval = 21, priority = 3)
+	 @ScheduledMethod(start = 987, interval = 21, priority = 3)
 	 public void monthlyData() {
 		 excelExporter.collectMonthlyData();
 		 csvExporter.exportMonthlyData();
