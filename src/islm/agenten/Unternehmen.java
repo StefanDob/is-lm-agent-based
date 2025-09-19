@@ -29,7 +29,7 @@ public class Unternehmen {
     private static final double MINIMUM_WAGE = 1.0;
     private static final double MINIMUM_PRICE = 1.0;
     
-    private static final double UPPER_PHI_PRICE = 100;
+    private static final double UPPER_PHI_PRICE = 120;
     private static final double LOWER_PHI_PRICE = 1.025;
     private static final double LAMBDA = 3.0;
     
