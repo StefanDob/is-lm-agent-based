@@ -34,4 +34,10 @@ public class ExportManager {
 		 excelExporter.collectMonthlyData();
 		 csvExporter.exportMonthlyData();
 	 }
+	 
+	 @ScheduledMethod(start = 987, interval = 21*3, priority = 3)
+	 public void semianualData() {
+		 
+		 csvExporter.exportSemianualData();
+	 }
 }

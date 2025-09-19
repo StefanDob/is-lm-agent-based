@@ -9,7 +9,7 @@ import islm.agenten.Unternehmen;
 
 public class DataCollecter {
 	private static double preis0Monat = 0.0;
-	private static double preis0Quarter = 0.0;
+	private static double preis0Semianual = 0.0;
 	//this method returns all currently employed households
 		public static int getOpenPositions() {
 			int openPositions = 0;
@@ -178,10 +178,10 @@ public class DataCollecter {
 	}
 	
 	//this method is only allowed to be called once per period
-		public static double getDeltaPriceQuarter() {
+		public static double getDeltaPriceSemianual() {
 			double preis1 = getDurchSchnittspreis();
-			double deltaPreis = (preis1 - preis0Quarter) / preis0Quarter;
-			preis0Quarter = preis1;
+			double deltaPreis = (preis1 - preis0Semianual) / preis0Semianual;
+			preis0Semianual = preis1;
 			return deltaPreis;
 			
 		}
@@ -190,7 +190,7 @@ public class DataCollecter {
 		return SessionManager.getUnemploymentTracker().getUnemploymentMonat().stream().mapToInt(Integer::intValue).average().orElse(0.0);
 	}
 	
-	public static double getDurchschnittsArbeitslosenQuarter() {
+	public static double getDurchschnittsArbeitslosenSemianual() {
 		return SessionManager.getUnemploymentTracker().getUnemploymentQuarter().stream().mapToInt(Integer::intValue).average().orElse(0.0);
 	}
 	

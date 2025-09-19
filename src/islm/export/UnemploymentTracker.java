@@ -8,7 +8,7 @@ public class UnemploymentTracker {
 	
 	List<Integer> unemploymentMonat = new ArrayList<>();
 	
-	List<Integer> unemploymentQuarter = new ArrayList<>();
+	List<Integer> unemploymentSemianual = new ArrayList<>();
 	
 	
 	
@@ -18,7 +18,7 @@ public class UnemploymentTracker {
     }
     
     public List<Integer> getUnemploymentQuarter() {
-        return unemploymentQuarter;
+        return unemploymentSemianual;
     }
 
     
@@ -29,7 +29,7 @@ public class UnemploymentTracker {
     @ScheduledMethod(start = 1, interval = 1, priority = 2)
     public void dailyTracking() {
     	unemploymentMonat.add(1000 - DataCollecter.getEmployedCount());
-    	unemploymentQuarter.add(1000 - DataCollecter.getEmployedCount());
+    	unemploymentSemianual.add(1000 - DataCollecter.getEmployedCount());
     }
     
     @ScheduledMethod(start = 1, interval = 21, priority = 4)
@@ -38,8 +38,8 @@ public class UnemploymentTracker {
     }
     
     @ScheduledMethod(start = 1, interval = 21*3, priority = 4)
-    public void quarterlyReset() {
-    	unemploymentQuarter.clear();
+    public void semianualReset() {
+    	unemploymentSemianual.clear();
     }
     
     

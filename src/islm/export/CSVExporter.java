@@ -8,7 +8,7 @@ public class CSVExporter {
 
     private final String dailyFilePath = "output/islm_daily_output.csv";
     private final String monthlyFilePath = "output/islm_monthly_output.csv";
-    private final String quarterlyFilePath = "output/islm_quarterly_output.csv";
+    private final String quarterlyFilePath = "output/islm_semianual_output.csv";
 
     private boolean dailyHeaderWritten = false;
     private boolean monthlyHeaderWritten = false;
@@ -73,15 +73,10 @@ public class CSVExporter {
             e.printStackTrace();
         }
 
-        // increment month counter and trigger quarterly export
-        monthCounter++;
-        if (monthCounter == 3) {
-            exportQuarterlyData();
-            monthCounter = 0;
-        }
+        
     }
 
-    private void exportQuarterlyData() {
+    public void exportSemianualData() {
         try (FileWriter fw = new FileWriter(quarterlyFilePath, true);
              BufferedWriter bw = new BufferedWriter(fw)) {
 
@@ -95,7 +90,7 @@ public class CSVExporter {
 
             
 
-            bw.write(tick + "," + DataCollecter.getDurchschnittsArbeitslosenQuarter() + "," + DataCollecter.getDeltaPriceQuarter()  + "\n");
+            bw.write(tick + "," + DataCollecter.getDurchschnittsArbeitslosenSemianual() + "," + DataCollecter.getDeltaPriceSemianual()  + "\n");
 
         } catch (IOException e) {
             e.printStackTrace();
