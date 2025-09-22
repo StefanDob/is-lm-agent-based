@@ -149,19 +149,7 @@ public class Haushalt {
     				if(arbeitGeber != null) break;
     			}
     		}
-			//if it does not find anything it just takes any job:
-			if(arbeitGeber == null) {
-				for(Unternehmen u : SessionManager.getUnternehmenListe()) {
-					if(u.getOpenPosition() ) {
-						acceptPositionAt(u);
-						if(arbeitGeber != null) break;
-					}
-			}
-	    		
-			}
-			if(arbeitGeber == null) {
-				System.out.println("Arbeitgeber is still sero");
-			}
+			
     	}else if(aktuellesGehalt >= reservationsGehalt) {
     		//Employee is happily working however he might still check with probability pi (not the circle thing) for better jobs
     		if(RandomHelper.nextDouble() < PI) {
