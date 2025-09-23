@@ -5,6 +5,7 @@ import java.util.*;
 
 import islm.agenten.Haushalt;
 import islm.agenten.HuashaltCallerHelper;
+import islm.agenten.Staat;
 import islm.agenten.Unternehmen;
 import islm.export.CSVExporter;
 import islm.export.ExportManager;
@@ -41,6 +42,10 @@ public class ISLMBuilder implements ContextBuilder<Object> {
         HuashaltCallerHelper helper = new HuashaltCallerHelper();
         context.add(helper);
         
+        //Setup Staat
+        Staat staat = new Staat();
+        SessionManager.setStaat(staat); 
+        context.add(staat);
         
         
         

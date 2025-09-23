@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import islm.agenten.Haushalt;
+import islm.agenten.Staat;
 import islm.agenten.Unternehmen;
 import islm.export.UnemploymentTracker;
 import repast.simphony.random.RandomHelper;
@@ -14,6 +15,7 @@ public class SessionManager {
 	public static List<Unternehmen> unternehmenListe = new ArrayList<>();
 	public static List<Haushalt> hausHaltListe = new ArrayList<>();
 	private static UnemploymentTracker unemploymentTracker;
+	private static Staat staat;
 	
 	
 	
@@ -93,6 +95,15 @@ public class SessionManager {
 	
 	public static UnemploymentTracker getUnemploymentTracker() {
 		return unemploymentTracker;
+	}
+
+
+	public static void setStaat(Staat staat) {
+		SessionManager.staat = staat;
+		
+	}
+	public static Staat getStaat() {
+		return staat;
 	}
 
 	

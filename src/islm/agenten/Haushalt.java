@@ -287,8 +287,10 @@ public class Haushalt {
     }
 
 	public void empfangeGehalt(double gehalt) {
-		aktuellesEinkommen += gehalt;
-		liquiditaet += gehalt;
+		double steuern = SessionManager.getStaat().getSteuerRate() * gehalt;
+		SessionManager.getStaat().empfangeSteuern(steuern);
+		aktuellesEinkommen += (gehalt - steuern);
+		liquiditaet += (gehalt - steuern);
 		
 		//sollte das Gehalt größer sein, als das Reservationsgehalt wird das reservationsgehalt hochgesetzt
 		if(gehalt > reservationsGehalt) {
@@ -297,9 +299,16 @@ public class Haushalt {
 	}
 	
 	public void empfangeProfit(double profit) {
-		aktuellesEinkommen += profit;
-		liquiditaet += profit;
+		double steuern = SessionManager.getStaat().getSteuerRate() * profit;
+		SessionManager.getStaat().empfangeSteuern(steuern);
+		aktuellesEinkommen += (profit - steuern);
+		liquiditaet += (profit - steuern);
 		
+	}
+	
+	public void empfangeTransfer(double transferPerHousehold) {
+		// TODO Auto-generated method stub
+		liquiditaet += transferPerHousehold;
 	}
 	
 	public double getLiquiditaet(){
@@ -345,6 +354,10 @@ public class Haushalt {
 		}
 		arbeitGeber = unternehmen;
 	}
+
+
+
+	
 
 
 
