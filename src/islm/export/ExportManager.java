@@ -29,7 +29,7 @@ public class ExportManager {
 		csvExporter.exportDailyData();
 	}
 	
-	 @ScheduledMethod(start = 987, interval = 21, priority = 3)
+	 @ScheduledMethod(start = 21, interval = 21, priority = 3)
 	 public void monthlyData() {
 		 excelExporter.collectMonthlyData();
 		 csvExporter.exportMonthlyData();
