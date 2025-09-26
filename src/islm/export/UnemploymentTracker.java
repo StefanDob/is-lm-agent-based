@@ -37,7 +37,7 @@ public class UnemploymentTracker {
     	unemploymentMonat.clear();
     }
     
-    @ScheduledMethod(start = 1, interval = 21*3, priority = 4)
+    @ScheduledMethod(start = 1, interval = 21*6, priority = 4)
     public void semianualReset() {
     	unemploymentSemianual.clear();
     }
