@@ -1,9 +1,9 @@
 <repast.simphony.chart2.engine.TimeSeriesChartDescriptor simphonyVersion="2.11.0">
-  <name>GesamtNachfrage</name>
+  <name>GeplanterMOnatlicherKOnsum</name>
   <dataSet>EconomyLogger</dataSet>
   <xAxisLabel>Tick Count</xAxisLabel>
-  <yAxisLabel>GesamtNachfrage</yAxisLabel>
-  <chartTitle>GesamtNachfrage</chartTitle>
+  <yAxisLabel>GeplanterMOnatlicherKOnsum</yAxisLabel>
+  <chartTitle>GeplanterMOnatlicherKOnsum</chartTitle>
   <type>TIME_SERIES</type>
   <background>
     <red>192</red>
@@ -21,13 +21,13 @@
   <showLegend>true</showLegend>
   <seriesIds>
     <entry>
-      <string>GesamtNachfrage</string>
+      <string>GeplanterMonatlicherKOnsum</string>
       <SeriesData>
-        <label>GesamtNachfrage</label>
+        <label>GeplanterMonatlicherKOnsum</label>
         <color>
-          <red>255</red>
-          <green>255</green>
-          <blue>0</blue>
+          <red>0</red>
+          <green>0</green>
+          <blue>255</blue>
           <alpha>255</alpha>
         </color>
       </SeriesData>
