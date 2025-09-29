@@ -60,3 +60,6 @@ PDF Histogram: Optional; not required for thesis analysis.
 Charts: Contains the visualizations referenced in the thesis. These charts update automatically based on the data in the other sheets, ensuring that they always reflect the latest simulation results.
 Additional analyses, including the Phillips curve, can be found in the accompanying Python Jupyter notebook.
 
+
+## NewModel
+The NewModel branch represents the version of the project that includes a government (state) actor. In the output folder, you can find several output files corresponding to different tax rates, e.g., islm_output_steuern_10%. You can easily adjust the tax rate by modifying the value in the Staat.java class and then running the project.
