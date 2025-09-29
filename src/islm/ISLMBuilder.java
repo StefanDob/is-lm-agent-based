@@ -19,19 +19,57 @@ import repast.simphony.data2.DataSetRegistry;
 import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.engine.environment.RunState;
 
+/**
+ * {@code ISLMBuilder} sets up the simulation environment for the ISLM model.
+ * 
+ * <p>This class is responsible for creating the agents, registering them in the 
+ * simulation context, and initializing supporting managers and trackers.</p>
+ *
+ * <p>Main responsibilities:</p>
+ * <ul>
+ *   <li>Populate the simulation with firms ({@code Unternehmen}) and households ({@code Haushalt}).</li>
+ *   <li>Create supporting agents such as the state ({@code Staat}), helper classes, and trackers.</li>
+ *   <li>Register all created agents with the {@code SessionManager} for global access.</li>
+ *   <li>Define the total number of ticks for the simulation run.</li>
+ * </ul>
+ */
 public class ISLMBuilder implements ContextBuilder<Object> {
+	
+	/** 
+     * Total number of simulation ticks.
+     * Defined as 7000 months × 21 days per month.
+     */
 	public static final int TOTAL_SIMULATION_TICKS = 7000 * 21;
-
+	
+	/**
+     * Builds and initializes the simulation context.
+     * 
+     * <p>The following setup is performed:</p>
+     * <ul>
+     *   <li>Creates 100 firms with initial liquidity and registers them.</li>
+     *   <li>Creates 1000 households with random firm connections and registers them.</li>
+     *   <li>Adds a {@code HuashaltCallerHelper} to manage household execution order.</li>
+     *   <li>Creates and registers the {@code Staat} (government actor).</li>
+     *   <li>Initializes and registers an {@code ExportManager} for data output.</li>
+     *   <li>Initializes and registers an {@code UnemploymentTracker} for statistics.</li>
+     *   <li>Configures the simulation to end at {@link #TOTAL_SIMULATION_TICKS}.</li>
+     * </ul>
+     *
+     * @param context the simulation context
+     * @return the populated simulation context
+     */
     @Override
     public Context<Object> build(Context<Object> context) {
         context.setId("islm");
         
+        // --- Firms (Unternehmen) ---
         for (int i = 0; i < 100; i++) {
             Unternehmen u = new Unternehmen(1000);
             context.add(u);
             SessionManager.registriereUnternehmen(u);
         }
        
+        // --- Households (Haushalt) ---
         for (int i = 0; i < 1000; i++) {
         	
             Haushalt h = new Haushalt(100,createListOfRandomCompanies());
@@ -39,83 +77,37 @@ public class ISLMBuilder implements ContextBuilder<Object> {
             SessionManager.registriereHaushalt(h);
         }
         
+        // --- Household helper (ensures random order of execution) ---
         HuashaltCallerHelper helper = new HuashaltCallerHelper();
         context.add(helper);
         
-        //Setup Staat
+        // --- Government actor (Staat) ---
         Staat staat = new Staat();
         SessionManager.setStaat(staat); 
         context.add(staat);
         
-        
-        
-       //Setup exporter
+        // --- Data export manager ---
         ExportManager exportManager = new ExportManager();
         context.add(exportManager);
         
-        //Setup Trackers
+        // --- Tracker for unemployment statistics ---
         UnemploymentTracker unemploymentTracker = new UnemploymentTracker();
         SessionManager.setUnemploymentTracker(unemploymentTracker);
         context.add(unemploymentTracker);
         
         
-        // 7000 months * 21 daysPerMonth 
+        // --- End simulation after defined number of ticks ---
         RunEnvironment.getInstance().endAt(TOTAL_SIMULATION_TICKS);
         
-      
-
-
-        
-        return context;
-        
-        /*
-        context.setId("LengnickModel");
-
-        NetworkBuilder<Object> consumptionNetBuilder = new NetworkBuilder<>("consumptionNetwork", context, true);
-        consumptionNetBuilder.buildNetwork();
-
-        NetworkBuilder<Object> employmentNetBuilder = new NetworkBuilder<>("employmentNetwork", context, false);
-        employmentNetBuilder.buildNetwork();
-
-        Random rand = new Random();
-
-        for (int i = 0; i < 1000; i++) {
-            Household h = new Household(100.0, 5.0);
-            context.add(h);
-        }
-
-        for (int i = 0; i < 100; i++) {
-            Firm f = new Firm(1.0 + rand.nextDouble() * 0.2, 5.0);
-            context.add(f);
-        }
-
-        Network<Object> consumptionNet = (Network<Object>) context.getProjection("consumptionNetwork");
-        Network<Object> employmentNet = (Network<Object>) context.getProjection("employmentNetwork");
-
-        for (Object obj : context) {
-            if (obj instanceof Household h) {
-                List<Firm> firms = new ArrayList<>();
-                for (Object fObj : context) {
-                    if (fObj instanceof Firm f) firms.add(f);
-                }
-                Collections.shuffle(firms);
-                for (int i = 0; i < 7; i++) {
-                    Firm f = firms.get(i);
-                    h.addConsumptionFirm(f);
-                    consumptionNet.addEdge(h, f);
-                }
-            }
-        }
-
-        return context;
-    }
-         
-         */
-        
-        
+        return context; 
     }
     
-    
+    /**
+     * Creates a list of random firms to initialize household consumption connections.
+     * Each household is connected to 7 randomly chosen firms.
+     *
+     * @return a list of 7 randomly selected firms
+     */
     private List<Unternehmen> createListOfRandomCompanies() {
 		List<Unternehmen> returnList = new ArrayList<>();
 		for(int i = 0; i < 7; i++) {
@@ -123,7 +115,4 @@ public class ISLMBuilder implements ContextBuilder<Object> {
 		}
 		return returnList;
 	}
-
-
-	
 }
