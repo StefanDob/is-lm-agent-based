@@ -14,21 +14,21 @@ Unemployment tracking over time.
 ## Model Versions
 Each branch in this repository represents a different version of the simulation model, reflecting various stages of development and refinement:
 
-# InitialModel
+### InitialModel
 
 Replicates Lengnick’s original model as closely as possible.
 This version highlights a key issue in the original setup — a persistently high unemployment rate.
 
-# Main
+### Main
 
 A near-faithful replication of Lengnick’s model with only minimal adjustments.
 Unlike the original, this version prevents agents from artificially increasing wages and later paying only a reduced “crisis wage” under financial stress.
 
-# FixedModel
+### FixedModel
 
 An improved version of the Lengnick model that implements several fixes to achieve a more stable and functional economy.
 
-# NewModel
+### NewModel
 
 Extends the model by introducing a government (state) actor.
 
