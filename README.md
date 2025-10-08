@@ -58,6 +58,7 @@ The primary output file is islm_output.xlsx, as it contains the charts used in t
 Daily Data and Monthly Data: Track the corresponding metrics and are overwritten with each simulation run.
 PDF Histogram: Optional; not required for thesis analysis.
 Charts: Contains the visualizations referenced in the thesis. These charts update automatically based on the data in the other sheets, ensuring that they always reflect the latest simulation results.
+
 Additional analyses, including the Phillips curve, can be found in the accompanying Python Jupyter notebook.
 
 
