@@ -6,6 +6,21 @@ import islm.SessionManager;
 import islm.agenten.Haushalt;
 import islm.agenten.Unternehmen;
 
+
+/**
+ * {@code DataCollecter} provides static utility methods for aggregating
+ * and summarizing key simulation statistics from households and firms.
+ * <p>Collected indicators include:</p>
+ * <ul>
+ *   <li>Labor market metrics – employment, open positions, average wages.</li>
+ *   <li>Firm-level statistics – prices, inventories, liquidity, profits.</li>
+ *   <li>Household statistics – consumption plans, liquidity, unmet demand.</li>
+ *   <li>Macro aggregates – total money supply, demand, unemployment averages.</li>
+ * </ul>
+ *
+ * <p>All methods operate on the global simulation state via {@link SessionManager}.
+ * Some methods (e.g., {@code getDeltaPriceMonat}, {@code getDeltaPriceSemianual})
+ */
 public class DataCollecter {
 	
 	//this method returns all currently employed households

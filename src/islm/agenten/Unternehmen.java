@@ -1,6 +1,5 @@
 package islm.agenten;
 
-import repast.simphony.engine.schedule.ScheduleParameters;
 import repast.simphony.engine.schedule.ScheduledMethod;
 import repast.simphony.random.RandomHelper;
 
@@ -8,45 +7,96 @@ import java.util.*;
 
 import islm.SessionManager;
 
+
+/**
+ * {@code Unternehmen} represents a firm in the agent-based model.
+ *
+ * <p>Firms hire workers, produce goods, adjust wages and prices, 
+ * and distribute profits to households. They react adaptively 
+ * to changes in demand and inventory levels by opening/closing 
+ * positions, firing workers, and adjusting prices or wages.</p>
+ *
+ * <h3>Key Features:</h3>
+ * <ul>
+ *   <li>Production: output is proportional to the number of workers.</li>
+ *   <li>Labor market: firms post vacancies, hire, and sometimes fire workers.</li>
+ *   <li>Pricing: firms adjust prices depending on inventory levels and marginal costs.</li>
+ *   <li>Wages: adjusted upward if vacancies remain unfilled, downward if persistent overstaffing occurs.</li>
+ *   <li>Profits: after paying wages and maintaining liquidity buffers, excess profits are distributed to households.</li>
+ * </ul>
+ */
 public class Unternehmen {
+	/** Current liquidity (money reserves). */
 	private double liquiditaet;
+	
+	/** Current product price (per unit). */
 	private double preis = 1;
-    private double gehalt = 1; // set it to one unit in the start so that the model does not brake
-    private int inventar = 1; //keeping track of it product and not in money
+	
+	/** Current wage per worker. */
+    private double gehalt = 1; 
     
+    /** Current inventory (units of goods in stock). */
+    private int inventar = 1;
+    
+    /** Demand observed during the last month. */
     private double nachfrageLetzterMonat = 0; 
+    
+    /** Marginal cost of production (wage cost per unit). */
     private double marginaleKosten = 0;
     
-    private int consecutiveMonthsAllJobsFilled = 0; //anzahl an monaten in denen durchgehend alle Positionen gefüllt wurden
+    /** Number of consecutive months with all jobs filled. */
+    private int consecutiveMonthsAllJobsFilled = 0; 
     
+    /** Number of open job positions waiting for workers. */
     private int openPositions = 0;
     
     
-    private static final int GAMMA = 24; //anzahl an aufeinanderfolgenden monaten in denen konsequent leute eingestellt wurden
-    private static final double DELTA = 0.019; //boundries of distribution to increase wage
+    private static final int GAMMA = 24; // Threshold for wage decreases
+    private static final double DELTA = 0.019; // Wage adjustment factor
     private static final double UPPER_PHI_INVENTORIES = 1.0;
     private static final double LOWER_PHI_INVENTORIES = 0.25;
     
     private static final double UPPER_PHI_PRICE = 1.15;
     private static final double LOWER_PHI_PRICE = 1.025;
-    private static final double LAMBDA = 3;
+    private static final double LAMBDA = 3; // Production multiplier (productivity) per worker per day
     
-    private static final double THETA = 0.75; //propability of changing price if inventory is not in bounds
-    private static final double theta = 0.02;
-    private static final double HI = 0.1;
+    private static final double THETA = 0.75; // Probability of adjusting price
+    private static final double theta = 0.02; // Magnitude of random price adjustment
+    private static final double HI = 0.1; // Liquidity buffer share
     
+    
+    /** List of employed workers (households). */
     private List<Haushalt> typeBPartners = new ArrayList<>(); // employment
     
+    /** Flag to fire a worker at the start of next month. */
     private boolean workerNeedsToBeFired = false;
     
+    /** Last month’s profit (before distribution). */
     private double profit = 0;
     
+    
+    /**
+     * Creates a new firm with an initial liquidity level.
+     *
+     * @param liquiditaet the firm’s starting liquidity
+     */
     public Unternehmen(double liquiditaet) {
 		this.liquiditaet = liquiditaet;
 	}
     
+    // ----------------------------------------------------------------------------------
+    // Simulation Scheduling
+    // ----------------------------------------------------------------------------------
+
     
-    //put it there because the descriptionof what the firms do come after the description of what the people do
+    
+    
+    /**
+     * Daily production step.
+     *
+     * <p>Executed once per simulation day. Output increases inventory
+     * proportionally to the number of workers employed.</p>
+     */
     @ScheduledMethod(start = 1, interval = 1, priority = 0)
     public void dayStep() {
     	//each firm produces according to the production function
@@ -55,10 +105,18 @@ public class Unternehmen {
     	inventar += LAMBDA * numberOfWorkers;
     }
 
-    
-    
-    
-    
+    /**
+     * Monthly adjustment phase.
+     *
+     * <p>Executed once per simulated month. The firm decides whether to fire workers,
+     * adjust wages, and adapt prices depending on inventory and demand conditions.</p>
+     *
+     * <ul>
+     *   <li>If inventories are too high, a worker is scheduled to be fired and price may decrease.</li>
+     *   <li>If inventories are too low, vacancies are created and price may increase.</li>
+     *   <li>Wages are adjusted up if vacancies persist, down if all positions are filled for many months.</li>
+     * </ul>
+     */
     @ScheduledMethod(start = 1, interval = 21, priority = -3)
     public void beginningOfMonth() {
     	//fire people if you have to do so because of last periods
@@ -67,6 +125,7 @@ public class Unternehmen {
     		workerNeedsToBeFired = false;
     	}
     	
+    	// Wage adjustment based on vacancy persistence
     	if (consecutiveMonthsAllJobsFilled == 0) {
     		//im letzen monat wurde niemand eingestellt obwohl es offene stellen gibt
             adjustWage(true); // increase wage
@@ -77,8 +136,7 @@ public class Unternehmen {
     	
     	
     	
-    	//adjust number of employees and price
-    	
+    	// Inventory thresholds
     	double upperBarrierInventory = UPPER_PHI_INVENTORIES * nachfrageLetzterMonat;
     	double lowerBarrierInventory = LOWER_PHI_INVENTORIES * nachfrageLetzterMonat;
     	
@@ -87,7 +145,7 @@ public class Unternehmen {
     	double upperBarrierPrice = UPPER_PHI_PRICE * marginaleKosten;
     	double lowerBarrierPrice = LOWER_PHI_PRICE * marginaleKosten;
     	
-    	
+    	// Inventory too high → fire worker, maybe lower price
     	if(inventar > upperBarrierInventory) {
     		//fire randomly chosen worker in next month
     		workerNeedsToBeFired = true;
@@ -97,6 +155,7 @@ public class Unternehmen {
     				adjustPrice(false); //decrease prce
     			}
     		}
+    	// Inventory too low → open position, maybe raise price
     	}else if(inventar <= lowerBarrierInventory) {
     		//create new position to raise production
     		openPositions++;
@@ -109,18 +168,29 @@ public class Unternehmen {
     		}
     	}
     	
-    	//reset Nachfrage letzter Monat to 0 after new Month has started
-    	
+    	// Reset demand tracker
     	nachfrageLetzterMonat = 0;
     	
     	
     }
     
+    /**
+     * Monthly finalization phase.
+     *
+     * <p>Executed once per simulated month, after households act.
+     * The firm pays wages, builds a liquidity buffer, and distributes profits
+     * to households through the {@link SessionManager}.</p>
+     *
+     * <ul>
+     *   <li>If liquidity is sufficient, wages are fully paid and profits distributed.</li>
+     *   <li>If liquidity is insufficient, workers receive reduced wages (crisis wages).</li>
+     * </ul>
+     */
     @ScheduledMethod(start=1, interval=21, priority= -5)
     public void finalizeMonth() {
         //pay wages, build buffer for bad times, pay profits
     	if( gehalt * typeBPartners.size() <= liquiditaet) {
-    		// genug geld um arbeiter zu bezahlen
+    		// Pay full wages
     		liquiditaet -= gehalt * typeBPartners.size();
     		for(Haushalt h : typeBPartners) {
     			h.empfangeGehalt(gehalt);
@@ -146,19 +216,22 @@ public class Unternehmen {
     	}
     	
     	
-    	//setze die Variable durchgehende Einstellungsmonate
+    	// Update job-fill counter
     	if(openPositions == 0) {
     		consecutiveMonthsAllJobsFilled++;
     	}else{
     		//keine Einstellung diesen Monat
     		consecutiveMonthsAllJobsFilled = 0;
     	}
-    	
-    	
-    	
     }
     
     
+    // ----------------------------------------------------------------------------------
+    // Internal Logic
+    // ----------------------------------------------------------------------------------
+    
+    
+    /** Fires a random worker, if any exist. */
     private Haushalt fireRandomWorker() {
     	if (typeBPartners == null || typeBPartners.isEmpty()) return null;
 
@@ -166,9 +239,7 @@ public class Unternehmen {
     	typeBPartners.get(index).notifyFired();
     	Haushalt h = typeBPartners.remove(index);
     	typeBPartners.removeIf(Objects::isNull);
-
         return h;
-		
 	}
 
 
@@ -198,56 +269,11 @@ public class Unternehmen {
         }
     }
     
-    //===============================Getter/Setter===========================================
     
-
-
-    public void addTypeBPartner(Haushalt f) {
-        typeBPartners.add(f);
-    }
-
-    public List<Haushalt> getTypeBPartners() {
-        return typeBPartners;
-    }
-
-
-	public int getNumberOfWorkers() {
-		return typeBPartners.size();
-	}
-	
-	public double getPreis() {
-		return preis;
-	}
-	
-	public boolean getOpenPosition() {
-		//TODO figure out some logic for hiring people Done
-		return openPositions > 0;
-	}
-	
-	public double getGehalt() {
-		return gehalt;
-	}
-	
-	public double getInventar() {
-		return inventar;
-	}
-	
-	public int getOpenPositions() {
-		return openPositions;
-	}
-
-
-	public void empfangeBewerbungAufArbeit(Haushalt haushalt) {
-		if(openPositions > 0) {
-			//if you have open positions hire worker
-			openPositions = openPositions - 1;
-			addTypeBPartner(haushalt);
-			haushalt.notifyHired(this);
-		}
-	}
-
-
-	/**
+    // ----------------------------------------------------------------------------------
+    // Market Interactions
+    // ----------------------------------------------------------------------------------
+    /**
 	 * Attempts to fulfill a customer's purchase request based on their planned consumption spending.
 	 * The method calculates the quantity of goods the customer wants to buy, and checks whether the
 	 * firm's current inventory can meet that demand. If the inventory is sufficient, the full quantity
@@ -275,13 +301,21 @@ public class Unternehmen {
 	    return quantitySold;
 	}
 	
-	public double getNachfrageLetzterMonat() {
-		return nachfrageLetzterMonat;
+	/**
+     * Processes a job application from a household.
+     * If vacancies exist, the household is hired and linked to this firm.
+     *
+     * @param haushalt the applying household
+     */
+	public void empfangeBewerbungAufArbeit(Haushalt haushalt) {
+		if(openPositions > 0) {
+			//if you have open positions hire worker
+			openPositions = openPositions - 1;
+			addTypeBPartner(haushalt);
+			haushalt.notifyHired(this);
+		}
 	}
-	public double getLiquiditaet() {
-		return liquiditaet;
-	}
-
+	
 	/**
 	 * notifies the Unternehmen that a household is quitting
 	 * @param haushalt haushalt that is quitting
@@ -292,10 +326,47 @@ public class Unternehmen {
 	}
 	
     
+    //===============================Getter/Setter===========================================
     
-    
+
+
+    public void addTypeBPartner(Haushalt f) {
+        typeBPartners.add(f);
+    }
+
+    public List<Haushalt> getTypeBPartners() {
+        return typeBPartners;
+    }
+
+
+	public int getNumberOfWorkers() {
+		return typeBPartners.size();
+	}
 	
+	public double getPreis() {
+		return preis;
+	}
+	
+	public boolean getOpenPosition() {
+		return openPositions > 0;
+	}
+	
+	public double getGehalt() {
+		return gehalt;
+	}
+	
+	public double getInventar() {
+		return inventar;
+	}
+	
+	public int getOpenPositions() {
+		return openPositions;
+	}
+	
+	public double getNachfrageLetzterMonat() {
+		return nachfrageLetzterMonat;
+	}
+	public double getLiquiditaet() {
+		return liquiditaet;
+	}
 }
-
-
-
