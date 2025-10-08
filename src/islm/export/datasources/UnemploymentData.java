@@ -2,6 +2,8 @@ package islm.export.datasources;
 
 import repast.simphony.data2.AggregateDataSource;
 import islm.agenten.Haushalt;
+
+//deprecated - not used anymore
 public class UnemploymentData implements AggregateDataSource {
 
     @Override

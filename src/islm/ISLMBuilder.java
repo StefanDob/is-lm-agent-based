@@ -3,24 +3,62 @@ package islm;
 import java.util.*;
 
 
+
 import islm.agenten.Haushalt;
 import islm.agenten.HuashaltCallerHelper;
 import islm.agenten.Unternehmen;
-import islm.export.CSVExporter;
 import islm.export.ExportManager;
-import islm.export.datasources.UnemploymentData;
 import repast.simphony.context.Context;
 import repast.simphony.dataLoader.ContextBuilder;
 import repast.simphony.engine.environment.RunEnvironment;
-import repast.simphony.engine.schedule.ScheduleParameters;
-import repast.simphony.engine.schedule.ScheduledMethod;
-import repast.simphony.data2.DataSetRegistry;
-import repast.simphony.engine.environment.RunEnvironment;
-import repast.simphony.engine.environment.RunState;
 
+
+/**
+ * {@code ISLMBuilder} sets up the simulation environment for the ISLM model.
+ * 
+ * <p>This class is responsible for creating the agents, registering them in the 
+ * simulation context, and initializing supporting managers and trackers.</p>
+ *
+ * <p>Main responsibilities:</p>
+ * <ul>
+ *   <li>Populate the simulation with firms ({@code Unternehmen}) and households ({@code Haushalt}).</li>
+ *   <li>Create supporting agents such as helper classes, and trackers.</li>
+ *   <li>Register all created agents with the {@code SessionManager} for global access.</li>
+ *   <li>Define the total number of ticks for the simulation run.</li>
+ * </ul>
+ */
 public class ISLMBuilder implements ContextBuilder<Object> {
+	
+	/** 
+     * Total number of simulation ticks.
+     * Defined as 7000 months × 21 days per month.
+     */
 	public static final int TOTAL_SIMULATION_TICKS = 7000 * 21;
 
+	/**
+	 * Builds and initializes the simulation context for the IS-LM model.
+	 * 
+	 * <p>This method sets up the main simulation environment by creating and registering
+	 * economic agents (companies and households), as well as helper and export management
+	 * components. It also defines the simulation’s total runtime.</p>
+	 * 
+	 * <p>The context includes:
+	 * <ul>
+	 *   <li>100 {@link Unternehmen} instances, each initialized with a base capital of 1000.</li>
+	 *   <li>1000 {@link Haushalt} instances, each initialized with an income of 100 and
+	 *       linked to a randomly selected list of seven companies.</li>
+	 *   <li>A {@link HuashaltCallerHelper} instance to coordinate household activities.</li>
+	 *   <li>An {@link ExportManager} instance to manage data export operations.</li>
+	 * </ul></p>
+	 * 
+	 * <p>All created agents are registered within the {@link SessionManager} to ensure
+	 * global accessibility throughout the simulation. The simulation is configured
+	 * to run for a total of {@code TOTAL_SIMULATION_TICKS} time steps,
+	 * corresponding to 7000 months with 21 days per month.</p>
+	 * 
+	 * @param context the simulation context to be built
+	 * @return the fully initialized simulation context
+	 */
     @Override
     public Context<Object> build(Context<Object> context) {
         context.setId("islm");
@@ -42,8 +80,6 @@ public class ISLMBuilder implements ContextBuilder<Object> {
         context.add(helper);
         
         
-        
-        
        //Setup exporter
         ExportManager exportManager = new ExportManager();
         context.add(exportManager);
@@ -51,61 +87,18 @@ public class ISLMBuilder implements ContextBuilder<Object> {
         
         // 7000 months * 21 daysPerMonth 
         RunEnvironment.getInstance().endAt(TOTAL_SIMULATION_TICKS);
-        
-      
-
-
-        
-        return context;
-        
-        /*
-        context.setId("LengnickModel");
-
-        NetworkBuilder<Object> consumptionNetBuilder = new NetworkBuilder<>("consumptionNetwork", context, true);
-        consumptionNetBuilder.buildNetwork();
-
-        NetworkBuilder<Object> employmentNetBuilder = new NetworkBuilder<>("employmentNetwork", context, false);
-        employmentNetBuilder.buildNetwork();
-
-        Random rand = new Random();
-
-        for (int i = 0; i < 1000; i++) {
-            Household h = new Household(100.0, 5.0);
-            context.add(h);
-        }
-
-        for (int i = 0; i < 100; i++) {
-            Firm f = new Firm(1.0 + rand.nextDouble() * 0.2, 5.0);
-            context.add(f);
-        }
-
-        Network<Object> consumptionNet = (Network<Object>) context.getProjection("consumptionNetwork");
-        Network<Object> employmentNet = (Network<Object>) context.getProjection("employmentNetwork");
-
-        for (Object obj : context) {
-            if (obj instanceof Household h) {
-                List<Firm> firms = new ArrayList<>();
-                for (Object fObj : context) {
-                    if (fObj instanceof Firm f) firms.add(f);
-                }
-                Collections.shuffle(firms);
-                for (int i = 0; i < 7; i++) {
-                    Firm f = firms.get(i);
-                    h.addConsumptionFirm(f);
-                    consumptionNet.addEdge(h, f);
-                }
-            }
-        }
-
+     
         return context;
     }
-         
-         */
-        
-        
-    }
     
-    
+    /**
+     * Creates a list of seven randomly selected {@link Unternehmen} instances.
+     * 
+     * <p>This method retrieves random companies from the {@link SessionManager}
+     * to associate each household with a diverse set of firms.</p>
+     * 
+     * @return a list of randomly selected companies
+     */
     private List<Unternehmen> createListOfRandomCompanies() {
 		List<Unternehmen> returnList = new ArrayList<>();
 		for(int i = 0; i < 7; i++) {

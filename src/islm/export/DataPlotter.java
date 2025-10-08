@@ -10,12 +10,21 @@ import org.knowm.xchart.BitmapEncoder;
 import org.knowm.xchart.BitmapEncoder.BitmapFormat;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 
-import repast.simphony.engine.schedule.ScheduledMethod;
-
+/**
+ * Utility class for generating visualizations from simulation output.
+ * 
+ * <p>This class reads the daily CSV output from the ISLM simulation and
+ * generates a histogram plot of the unmet demand ratio across all households.
+ * Zero and non-zero values are handled separately to clearly show density
+ * at zero.</p>
+ * 
+ * <p>The plot is saved as a PNG file at the end of the simulation
+ * ({@link ISLMBuilder#TOTAL_SIMULATION_TICKS}).</p>
+ * 
+ * The chart is not used in the actual paper - just for visualisation
+ */
 public class DataPlotter {
 	
 	    public void exportAtTheEnd() {

@@ -1,13 +1,21 @@
 package islm.export;
 
-import repast.simphony.engine.schedule.ScheduledMethod;
 import java.io.*;
 import java.nio.file.*;
-import java.util.List;
 
-import islm.SessionManager;
-import islm.agenten.Haushalt;
-
+/**
+ * Utility class for exporting simulation data into CSV files at different time intervals.
+ * 
+ * <p>The exporter creates three output files under the {@code output/} directory:</p>
+ * <ul>
+ *   <li>{@code islm_daily_output.csv} – exports daily statistics (e.g., unmet demand ratio).</li>
+ *   <li>{@code islm_monthly_output.csv} – exports monthly macroeconomic indicators 
+ *       (employment, wages, prices, inventories, etc.).</li>
+ * </ul>
+ *
+ * <p>Each file is initialized with headers on first write. Existing files are deleted 
+ * when a new {@code CSVExporter} is created to ensure fresh outputs per simulation run.</p>
+ */
 public class CSVExporter {
 
     private final String dailyFilePath = "output/islm_daily_output.csv";
@@ -16,6 +24,10 @@ public class CSVExporter {
     private boolean dailyHeaderWritten = false;
     private boolean monthlyHeaderWritten = false;
 
+    /**
+     * Creates a new exporter and ensures the output directory exists.
+     * Old CSV files are deleted at initialization to avoid mixing runs.
+     */
     public CSVExporter() {
         try {
             Files.createDirectories(Paths.get("output"));
@@ -27,6 +39,10 @@ public class CSVExporter {
     }
 
    
+    /**
+     * Appends daily simulation statistics to {@code islm_daily_output.csv}.
+     * Currently logs tick number and average unmet demand ratio.
+     */
     public void exportDailyData() {
         try (FileWriter fw = new FileWriter(dailyFilePath, true);
              BufferedWriter bw = new BufferedWriter(fw)) {
@@ -49,7 +65,9 @@ public class CSVExporter {
         }
     }
 
-    
+    /**
+     * Appends monthly aggregated statistics to {@code islm_monthly_output.csv}.
+     */
     public void exportMonthlyData() {
         try (FileWriter fw = new FileWriter(monthlyFilePath, true);
              BufferedWriter bw = new BufferedWriter(fw)) {
