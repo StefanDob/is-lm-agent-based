@@ -317,7 +317,7 @@ public class Haushalt {
     //--- Income---
     
     /**
-     * Receive salary, pay taxes, and update liquidity and reservation wage.
+     * Receive salary and update liquidity and reservation wage.
      */
 	public void empfangeGehalt(double gehalt) {
 		liquiditaet += gehalt;
@@ -329,7 +329,7 @@ public class Haushalt {
 	}
 	
 	/**
-     * Receive profit income (e.g., dividends), after taxes.
+     * Receive profit income (e.g., dividends), no taxes.
      */
 	public void empfangeProfit(double profit) {
 		liquiditaet += profit;	
