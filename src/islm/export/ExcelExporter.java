@@ -21,6 +21,17 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Handles the collection and export of simulation data to an Excel workbook.
+ * 
+ * <p>This class collects daily and monthly simulation metrics (e.g., unmet demand, employment,
+ * wages, prices, inventories, Gini coefficients) and writes them to an Excel file
+ * ("output/islm_output.xlsx"). It also generates a histogram sheet for the distribution
+ * of daily unmet demand ratios.</p>
+ * 
+ * <p>Daily data is captured in a {@code DailyData} list and monthly data in a {@code MonthlyData} list.
+ * The writeToExcel() method ensures previous sheets are removed before adding updated data.</p>
+ */
 public class ExcelExporter {
 
 	private final String outputPath = "output/islm_output.xlsx";
@@ -36,7 +47,10 @@ public class ExcelExporter {
         }
     }
 
-    
+    /**
+     * Collects daily data for the current simulation tick (e.g., unmet demand ratio)
+     * and stores it in memory for later export.
+     */
     public void collectDailyData() {
         double tick = RunEnvironment.getInstance().getCurrentSchedule().getTickCount();
         double unmetDemandRatio = DataCollecter.getUnmetDemandRatioDurchschnitt();
@@ -44,7 +58,10 @@ public class ExcelExporter {
         dailyDataList.add(new DailyData(tick, unmetDemandRatio));
     }
 
-    
+    /**
+     * Collects monthly aggregate data, including employment statistics, financial metrics,
+     * consumption, and inequality measures, and stores it for later export.
+     */
     public void collectMonthlyData() {
         double tick = RunEnvironment.getInstance().getCurrentSchedule().getTickCount();
         int year = (int) (0 + (tick / 12) / 21);
@@ -73,7 +90,11 @@ public class ExcelExporter {
     }
 
     
-
+    /**
+     * Writes all collected daily and monthly data to the Excel workbook.
+     * Also generates a histogram sheet for the distribution of unmet demand.
+     * Existing sheets with the same names are removed to avoid duplication.
+     */
     public void writeToExcel() {
         Workbook workbook = new XSSFWorkbook();
 
@@ -212,7 +233,9 @@ public class ExcelExporter {
     }
 
 
-
+    /**
+     * Represents a single day's data for export.
+     */
     private static class DailyData {
         final double tick;
         final double unmetDemandRatio;
@@ -223,7 +246,10 @@ public class ExcelExporter {
         }
         
     }
-
+    
+    /**
+     * Represents aggregated monthly data for export.
+     */
     private static class MonthlyData {
         final double tick;
         final int jahr;

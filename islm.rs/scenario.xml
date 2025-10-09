@@ -10,5 +10,4 @@
 <repast.simphony.action.time_series_chart context="islm" file="repast.simphony.action.time_series_chart_7.xml" />
 <repast.simphony.action.time_series_chart context="islm" file="repast.simphony.action.time_series_chart_8.xml" />
 <repast.simphony.action.time_series_chart context="islm" file="repast.simphony.action.time_series_chart_9.xml" />
-<repast.simphony.action.time_series_chart context="islm" file="repast.simphony.action.time_series_chart_10.xml" />
 </Scenario>
